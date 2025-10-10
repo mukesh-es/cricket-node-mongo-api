@@ -4,18 +4,21 @@ const apiHit = require('./middlewares/apiHitCount');
 
 const express = require('express');
 const app = express();
-const connectDB = require('./config/db');
-connectDB();
-
-const matchesRoutes = require('./routes/matchesRoute');
-const competitionsRoutes = require('./routes/competitionRoute');
+const connectMongoDB = require('./config/mongoDB');
+connectMongoDB();
 
 app.use(express.json());
 app.use(apiHit);
 
+
 // Routes
-app.use('/matches', matchesRoutes);
-app.use('/competitions', competitionsRoutes);
+app.use('/matches', require('./routes/matchesRoute'));
+app.use('/competitions', require('./routes/competitionRoute'));
+app.use('/players', require('./routes/playerRoute'));
+app.use('/teams', require('./routes/teamRoute'));
+app.use('/seasons', require('./routes/seasonRoute'));
+app.use('/iccranks', require('./routes/rankRoute'));
+app.use('/tournaments', require('./routes/tournamentRoute'));
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

@@ -4,7 +4,7 @@ const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../utils/dbHelper');
 const { getApiName, getFieldName } = require('../utils/helpers');
 
-exports.matchData = async(req, res) => {
+exports.fieldData = async(req, res) => {
     try{
         const {matchId} = req.params;
         const apiName = getApiName(req.originalUrl);
