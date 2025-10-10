@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const connectMongoDB = async () => {
     try{
-        const DBURI = `${process.env.MONGODB_URI}${process.env.MONGODB}`
-        await mongoose.connect(DBURI, {
+        await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             maxPoolSize: 10,
@@ -11,6 +10,7 @@ const connectMongoDB = async () => {
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000
         });
+        mongoose.connection.useDb(process.env.MONGODB);
         console.log("MongoDB connected");
     }catch(err){
         console.error('MongoDB connection failed')
