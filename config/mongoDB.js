@@ -15,8 +15,8 @@ const connectMongoDB = async () => {
 
     // Connect to the MongoDB server (no DB yet)
     await mongoose.connect(databaseURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
       maxPoolSize: 10,
       minPoolSize: 2,
       serverSelectionTimeoutMS: 5000,
