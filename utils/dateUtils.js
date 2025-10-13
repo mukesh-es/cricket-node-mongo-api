@@ -5,4 +5,8 @@ function formatDate(date=new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-module.exports = { formatDate };
+function toUnixTimestamp(dateStr) {
+  return Math.floor(new Date(dateStr).getTime() / 1000);
+}
+
+module.exports = { formatDate, toUnixTimestamp };

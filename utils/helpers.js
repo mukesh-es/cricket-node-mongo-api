@@ -26,14 +26,27 @@ function getFieldName(apiName){
         teams_stats: "teams_stats",
 
         // Team Tracker
-        teams_crickettracker: "crickettracker"
+        teams_crickettracker: "crickettracker",
+        
+        // Venue
+        venues_stats: "venues_stats",
+        venues_matches: "venues_matches",
     };
     return fields?.[apiName] || null;
 }
 
-function getOffset(pageNumber=1, perPage=20) {
+function getPagination(pageNumber=1, perPage=20) {
+    if(!pageNumber){
+        pageNumber=1
+    }
+    if(!perPage){
+        perPage=20
+    }
     if(perPage > 80) perPage = 80;
-    return (pageNumber - 1) * perPage;
+    return {
+        offset: (pageNumber - 1) * perPage,
+        limit: perPage
+    } 
 }
 
-module.exports = { getApiName, getFieldName, getOffset };
+module.exports = { getApiName, getFieldName, getPagination };
