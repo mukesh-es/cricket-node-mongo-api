@@ -15,6 +15,20 @@ exports.info = async(req, res) => {
     }
 }
 
+exports.teams = async(req, res) => {
+    try{
+        const {search} = req.query;
+        const filters = {};
+        if(search){
+            filters.title = { $regex: search, $options: "i" } 
+        }
+        const result = await TeamModel.find(filters);
+        requestSuccess(res, "Data success", result);
+    } catch(err){
+        requestFailed(res, "Something went wrong");
+    }
+}
+
 exports.fieldData = async(req, res) => {
     try{
         const {teamId, resource} = req.params;
