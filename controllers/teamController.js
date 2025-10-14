@@ -1,7 +1,7 @@
 const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList } = require('../utils/dbHelper');
+const { getFieldByAPI, getMatchesList, getTeamsList } = require('../utils/dbHelper');
 const { getApiName, getFieldName } = require('../utils/helpers');
 
 exports.info = async(req, res) => {
@@ -17,12 +17,8 @@ exports.info = async(req, res) => {
 
 exports.teams = async(req, res) => {
     try{
-        const {search} = req.query;
-        const filters = {};
-        if(search){
-            filters.title = { $regex: search, $options: "i" } 
-        }
-        const result = await TeamModel.find(filters);
+        const queryParams = req.query;
+        const result = await getTeamsList(queryParams);
         requestSuccess(res, "Data success", result);
     } catch(err){
         requestFailed(res, "Something went wrong");

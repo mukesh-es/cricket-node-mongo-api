@@ -1,7 +1,7 @@
 const MatchModel = require('../models/matchesModel');
 const PlayerModel = require('../models/playerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../utils/dbHelper');
+const { getFieldByAPI, getPlayersList } = require('../utils/dbHelper');
 const { getApiName, getFieldName } = require('../utils/helpers');
 
 exports.fieldData = async(req, res) => {
@@ -11,6 +11,16 @@ exports.fieldData = async(req, res) => {
         const fieldName = getFieldName(apiName);
         const filters = {pid: Number(playerId)};
         const result = await getFieldByAPI(PlayerModel, fieldName, filters);
+        requestSuccess(res, "Data success", result);
+    } catch(err){
+        requestFailed(res, "Something went wrong");
+    }
+}
+
+exports.players = async(req, res) => {
+    try{
+        const queryParams = req.query;
+        const result = await getPlayersList(queryParams);
         requestSuccess(res, "Data success", result);
     } catch(err){
         requestFailed(res, "Something went wrong");

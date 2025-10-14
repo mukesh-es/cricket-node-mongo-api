@@ -1,4 +1,4 @@
-const fieldsKeys = {
+const apiFieldsKeys = {
     // Matches
     matches_info: "match_info",
     matches_advance: "match_advance",
@@ -15,8 +15,6 @@ const fieldsKeys = {
     teams_player: "teams_player",
     teams_squads: "teams_squads",
     teams_stats: "teams_stats",
-
-    // Team Tracker
     teams_crickettracker: "crickettracker",
     
     // Players
@@ -33,6 +31,11 @@ const fieldsKeys = {
     competitions_squads: "competitions_squads",
     competitions_standings: "competitions_standings",
     competitions_stats: "competitions_stats",
+
+    // Tournaments
+    tournaments: "tournaments",
+    tournaments_competitions: "tournament_competitions",
+    tournaments_crickettracker: "tournament_crickettracker",
 };
 
-module.exports = { fieldsKeys };
+module.exports = { apiFieldsKeys };
