@@ -1,6 +1,14 @@
 const { HTTP_CODE } = require("./consants");
 
 const requestSuccess = (res, message = "Success", data = {}, status = HTTP_CODE.SUCCESS) => {
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch (err) {
+      data = [];
+    }
+  }
+  
   const response = {
      status: "ok",
      response: data ? data : []
