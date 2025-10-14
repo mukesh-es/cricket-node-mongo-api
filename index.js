@@ -26,6 +26,7 @@ const startServer = async () => {
       app.use('/iccranks', require('./routes/rankRoute'));
       app.use('/tournaments', require('./routes/tournamentRoute'));
       app.use('/venues', require('./routes/venueRoute'));
+      app.use('/', require('./routes/generalRoute'));
 
       app.use((err, req, res, next) => {
           console.error(err.stack);

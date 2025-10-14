@@ -1,4 +1,4 @@
-const { fieldsKeys } = require("./fieldsKeys");
+const { apiFieldsKeys } = require("./apiFieldKeys");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
@@ -9,7 +9,7 @@ function getApiName(path) {
 }
 
 function getFieldName(apiName){
-    return fieldsKeys?.[apiName] || null;
+    return apiFieldsKeys?.[apiName] || null;
 }
 
 function getPagination(pageNumber=1, perPage=20) {
