@@ -1,7 +1,7 @@
 const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../utils/dbHelper');
+const { getFieldByAPI, getMatchesList } = require('../utils/dbHelper');
 const { getApiName, getFieldName } = require('../utils/helpers');
 
 exports.info = async(req, res) => {
@@ -32,13 +32,21 @@ exports.teams = async(req, res) => {
 exports.fieldData = async(req, res) => {
     try{
         const {teamId, resource} = req.params;
+        const queryParams = req.query;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
         const filters = {
             tid: Number(teamId),
         };
-        let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;
-        const result = await getFieldByAPI(resourceModel, fieldName, filters);
+
+        let result;
+        if(resource === 'matches'){
+            queryParams.team_id = teamId;
+            result = await getMatchesList(queryParams);
+        }else{
+            let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;
+            result = await getFieldByAPI(resourceModel, fieldName, filters);
+        }
         requestSuccess(res, "Data success", result);
     } catch(err){
         requestFailed(res, "Something went wrong");

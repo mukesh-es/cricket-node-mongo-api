@@ -1,9 +1,8 @@
 const MatchModel = require('../models/matchesModel');
 const HighlightModel = require('../models/highlightModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../utils/dbHelper');
-const { unixTimestamp } = require('../utils/dateUtils');
-const { getApiName, getFieldName, getPagination } = require('../utils/helpers');
+const { getFieldByAPI, getMatchesList } = require('../utils/dbHelper');
+const { getApiName, getFieldName } = require('../utils/helpers');
 
 exports.fieldData = async(req, res) => {
     try{
@@ -20,20 +19,15 @@ exports.fieldData = async(req, res) => {
 
 exports.matches = async(req, res) => {
     try{
+        const queryParams = req.query;
         const {
             highlight_live_matches, 
             highlight_compilation, 
-            country,
-            status,
-            per_page,
-            paged,
-            date
-        } = req.query;
+            country
+        } = queryParams;
         let fieldName;
         let resourceModel;
         let result;
-
-        let filters  = {};
         
         // Highlight Matches
         if(highlight_live_matches && country){
@@ -44,15 +38,7 @@ exports.matches = async(req, res) => {
             resourceModel = HighlightModel;
         }else{
             // Matches
-            let orderType = 'DESC';
-            if(status == 1){
-                orderType = 'ASC';
-            }
-            if(status > 0){
-                filters.status_id = status;
-            }
-            const pagination = getPagination(paged, per_page);
-            result = await MatchModel.find(filters).sort(orderType).skip(pagination.offset).limit(pagination.limit);
+            result = await getMatchesList(queryParams);
         }
         if(fieldName){
             result = await getFieldByAPI(resourceModel, fieldName);

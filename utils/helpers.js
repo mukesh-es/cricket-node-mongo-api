@@ -1,3 +1,5 @@
+const { fieldsKeys } = require("./fieldsKeys");
+
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
     const parts = cleanPath.split('/').filter(Boolean).filter(p => isNaN(p));
@@ -7,32 +9,7 @@ function getApiName(path) {
 }
 
 function getFieldName(apiName){
-    const fields = {
-        // Matches
-        matches_info: "match_info",
-        matches_advance: "match_advance",
-        matches_content: "match_content",
-        matches_newpoint2: "match_point",
-        matches_statistics: "match_statistics",
-        matches_wagons: "match_wagons",
-
-        // Matches Innings
-        matches_innings_commentary: "innings_commentary",
-        matches_innings_content: "innings_content",
-
-        // Teams
-        teams_player: "teams_player",
-        teams_squads: "teams_squads",
-        teams_stats: "teams_stats",
-
-        // Team Tracker
-        teams_crickettracker: "crickettracker",
-        
-        // Venue
-        venues_stats: "venues_stats",
-        venues_matches: "venues_matches",
-    };
-    return fields?.[apiName] || null;
+    return fieldsKeys?.[apiName] || null;
 }
 
 function getPagination(pageNumber=1, perPage=20) {
