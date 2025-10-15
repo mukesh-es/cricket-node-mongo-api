@@ -29,11 +29,16 @@ exports.fieldData = async(req, res) => {
     try{
         const {teamId, resource} = req.params;
         const queryParams = req.query;
+        const {format} = queryParams;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
         const filters = {
             tid: Number(teamId),
         };
+
+        if(format && format > 0){
+            filters.formats = format;
+        }
 
         let result;
         if(resource === 'matches'){

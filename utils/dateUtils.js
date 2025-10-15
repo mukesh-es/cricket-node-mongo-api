@@ -9,4 +9,18 @@ function toUnixTimestamp(dateStr) {
   return Math.floor(new Date(dateStr).getTime() / 1000);
 }
 
-module.exports = { formatDate, toUnixTimestamp };
+function getTimestampRange(dateStr) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  const endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+  return {
+    start: Math.floor(startDate.getTime() / 1000), // UNIX timestamp in seconds
+    end: Math.floor(endDate.getTime() / 1000),
+  };
+}
+
+module.exports = { 
+  formatDate, 
+  toUnixTimestamp,
+  getTimestampRange
+};

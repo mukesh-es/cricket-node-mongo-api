@@ -56,11 +56,7 @@ exports.competitions = async(req, res) => {
         if(fieldName){
             result = await getFieldByAPI(HighlightModel, fieldName);
         }
-        const response = {
-            status: "ok",
-            response: result ? result : []
-        }
-        requestSuccess(res, "Data success", response);
+        requestSuccess(res, "Data success", result);
     } catch(err){
         requestFailed(res, "Something went wrong");
     }
