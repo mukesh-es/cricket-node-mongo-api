@@ -41,11 +41,7 @@ exports.playervsplayer = async(req, res) => {
             const matchTeamB = matchResult.teamb;
             playerVSplayer = team1 == matchTeamA && team2 == matchTeamB ? matchResult.match_playervsplayer_tavstb : matchResult.match_playervsplayer_tbvsta;
         }
-        const response = {
-            status: "ok",
-            response: playerVSplayer ? playerVSplayer : []
-        }
-        requestSuccess(res, "Data success", response);
+        requestSuccess(res, "Data success", playerVSplayer);
     } catch(err){
         requestFailed(res, "Something went wrong");
     }

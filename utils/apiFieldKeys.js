@@ -16,6 +16,7 @@ const apiFieldsKeys = {
     teams_squads: "teams_squads",
     teams_stats: "teams_stats",
     teams_crickettracker: "crickettracker",
+    team_crickettracker: "crickettracker",
     
     // Players
     players_advancestats: "players_advancestats",
@@ -36,6 +37,7 @@ const apiFieldsKeys = {
     tournaments: "tournaments",
     tournaments_competitions: "tournament_competitions",
     tournaments_crickettracker: "tournament_crickettracker",
+    tournament_crickettracker: "tournament_crickettracker",
 };
 
 module.exports = { apiFieldsKeys };

@@ -21,11 +21,11 @@ const startServer = async () => {
       app.use('/matches', require('./routes/matchesRoute'));
       app.use('/competitions', require('./routes/competitionRoute'));
       app.use('/players', require('./routes/playerRoute'));
-      app.use('/teams', require('./routes/teamRoute'));
-      app.use('/seasons', require('./routes/seasonRoute'));
       app.use('/iccranks', require('./routes/rankRoute'));
-      app.use('/tournaments', require('./routes/tournamentRoute'));
       app.use('/venues', require('./routes/venueRoute'));
+      app.use(['/team', '/teams'], require('./routes/teamRoute'));
+      app.use(['/season', '/seasons'], require('./routes/seasonRoute'));
+      app.use(['/tournament', '/tournaments'], require('./routes/tournamentRoute'));
       app.use('/', require('./routes/generalRoute'));
 
       app.use((err, req, res, next) => {
