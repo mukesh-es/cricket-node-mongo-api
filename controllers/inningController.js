@@ -20,8 +20,8 @@ exports.fieldData = async(req, res) => {
         //         result.commentaries = [...result.commentaries].reverse();
         //     }
         // }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

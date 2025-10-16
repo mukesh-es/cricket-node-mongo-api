@@ -17,12 +17,12 @@
 //         );
 
 //         if (!match) {
-//             return requestFailed(res, "Failed to save match info");
+//             return requestFailed({res, err: "Failed to save match info"});
 //         }
 
-//         requestSuccess(res, "Saved successfully");
+//         requestSuccess({res, result});
 //     }catch(err){
 //         console.error('Error: ', err);
-//         requestFailed(res, "Something went wrong!");
+//         requestFailed({res, err});
 //     }
 // }

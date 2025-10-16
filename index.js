@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { requestFailed } = require('./utils/responseHandler');
+const apiLogger = require('./middlewares/apiLogger');
 const apiHit = require('./middlewares/apiHitCount');
 
 const express = require('express');
@@ -15,6 +16,7 @@ const startServer = async () => {
       await connectMongoDB();
       console.log("MongoDB connected");
 
+      app.use(apiLogger);
       app.use(apiHit);
       
       // Routes
@@ -30,7 +32,7 @@ const startServer = async () => {
 
       app.use((err, req, res, next) => {
           console.error(err.stack);
-          requestFailed(res, 'Something went wrong');
+          requestFailed({res, err: err.stack});
       });
 
       app.listen(PORT, () => {

@@ -19,8 +19,15 @@ function getTimestampRange(dateStr) {
   };
 }
 
+function getDateMonth(dateStr){
+  const date = new Date(dateStr);
+  return date.toLocaleString('en-US', { month: 'long' });
+}
+
+
 module.exports = { 
   formatDate, 
   toUnixTimestamp,
-  getTimestampRange
+  getTimestampRange,
+  getDateMonth
 };

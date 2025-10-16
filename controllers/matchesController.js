@@ -1,5 +1,7 @@
 const MatchModel = require('../models/matchesModel');
 const HighlightModel = require('../models/highlightModel');
+const InningModel = require('../models/inningModel');
+
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
 const { getApiName, getFieldName } = require('../helpers/helpers');
@@ -7,13 +9,22 @@ const { getApiName, getFieldName } = require('../helpers/helpers');
 exports.fieldData = async(req, res) => {
     try{
         const {matchId} = req.params;
+        const {iid} = req.query;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
-        const filters = {match_id: Number(matchId)};
-        const result = await getFieldByAPI(MatchModel, fieldName, filters);
-        requestSuccess(res, "Data success", result);
+        let result;
+        let resourceModel;
+        let filters = {match_id: Number(matchId)};
+        if(iid && apiName === 'matches_playerwagon'){
+            filters.iid = Number(iid);
+            resourceModel = InningModel;
+        }else{
+            resourceModel = MatchModel;
+        }
+        result = await getFieldByAPI(resourceModel, fieldName, filters);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -43,8 +54,8 @@ exports.matches = async(req, res) => {
         if(fieldName){
             result = await getFieldByAPI(resourceModel, fieldName);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

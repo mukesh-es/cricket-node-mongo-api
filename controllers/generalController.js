@@ -8,9 +8,9 @@ const callAPI = require('../helpers/apiHelper');
 exports.config = async(req, res) => {
     try{
         const result = getConfigSync();
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -22,18 +22,17 @@ exports.fieldData = async(req, res) => {
             resourceModel = RankTourModel;
         }
         const result = await getFieldByAPI(resourceModel, apiName);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
 exports.apiCall = async(req, res) => {
     try{
         const result = await callAPI(`${process.env.APPAPI_CDN_BASE}${req.originalUrl}`);
-        console.log('result: ', result);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

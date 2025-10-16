@@ -2,13 +2,15 @@ const ReelModel = require('../models/reelModel');
 const NewsModel = require('../models/newsModel');
 const RankTourModel = require('../models/rankTourModel');
 const MatchModel = require('../models/matchesModel');
+
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getPagination, getApiName } = require('../helpers/helpers');
-const { getFieldByAPI } = require('../helpers/dbHelper');
+const { getFieldByAPI, getCompetitionsList } = require('../helpers/dbHelper');
 
 exports.fieldData = async(req, res) => {
     try{
         const {season, resource} = req.params;
+        const queryParams = req.query;
         let {
             id,
             filter_type, 
@@ -20,8 +22,11 @@ exports.fieldData = async(req, res) => {
             news_cat,
             per_page, 
             paged
-        } = req.query;
+        } = queryParams;
 
+        if(season){
+            queryParams.season = season;
+        }
         
         let result;
         const filters = {};
@@ -30,14 +35,18 @@ exports.fieldData = async(req, res) => {
         filter_type = Number(filter_type);
         filter_value = Number(filter_value);
 
+        const pagination = getPagination(paged, per_page);
+
         const apiName = getApiName(req.originalUrl);
         const currentTime = Date.now() + (5 * 60 * 60 * 1000) + (30 * 60 * 1000);
+        
         if(apiName === 'season'){
             result = await getFieldByAPI(RankTourModel, 'seasons_list');
+        }else if(apiName === 'season_competitions'){
+            result = await getCompetitionsList(queryParams);
         }else{
             let resourceModel;
             let orderBy;
-            const pagination = getPagination(paged, per_page);
             const isReel = resource == 'competitions';
             const isNews = resource == 'news';
 
@@ -102,8 +111,8 @@ exports.fieldData = async(req, res) => {
             }
             result = await resourceModel.find(filters).sort(orderBy).skip(pagination.offset).limit(pagination.limit);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong", err);
+        requestFailed({res, err});
     }
 }
