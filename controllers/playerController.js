@@ -1,8 +1,8 @@
 const MatchModel = require('../models/matchesModel');
 const PlayerModel = require('../models/playerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getPlayersList } = require('../utils/dbHelper');
-const { getApiName, getFieldName } = require('../utils/helpers');
+const { getFieldByAPI, getPlayersList } = require('../helpers/dbHelper');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.fieldData = async(req, res) => {
     try{

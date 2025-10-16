@@ -1,7 +1,7 @@
 const InningModel = require('../models/inningModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../utils/dbHelper');
-const { getApiName, getFieldName } = require('../utils/helpers');
+const { getFieldByAPI } = require('../helpers/dbHelper');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.fieldData = async(req, res) => {
     try{

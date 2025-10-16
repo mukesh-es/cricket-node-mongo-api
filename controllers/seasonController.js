@@ -3,8 +3,8 @@ const NewsModel = require('../models/newsModel');
 const RankTourModel = require('../models/rankTourModel');
 const MatchModel = require('../models/matchesModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getPagination, getApiName } = require('../utils/helpers');
-const { getFieldByAPI } = require('../utils/dbHelper');
+const { getPagination, getApiName } = require('../helpers/helpers');
+const { getFieldByAPI } = require('../helpers/dbHelper');
 
 exports.fieldData = async(req, res) => {
     try{

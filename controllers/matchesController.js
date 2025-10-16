@@ -1,8 +1,8 @@
 const MatchModel = require('../models/matchesModel');
 const HighlightModel = require('../models/highlightModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList } = require('../utils/dbHelper');
-const { getApiName, getFieldName } = require('../utils/helpers');
+const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.fieldData = async(req, res) => {
     try{
