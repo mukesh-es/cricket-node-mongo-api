@@ -4,8 +4,8 @@ const CompStatModel = require('../models/compStatModel');
 const MatchModel = require('../models/matchesModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList } = require('../utils/dbHelper');
-const { getApiName, getFieldName } = require('../utils/helpers');
+const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 
 exports.info = async(req, res) => {

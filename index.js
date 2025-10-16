@@ -4,7 +4,7 @@ const apiHit = require('./middlewares/apiHitCount');
 
 const express = require('express');
 const app = express();
-const connectMongoDB = require('./config/mongoDB');
+const connectMongoDB = require('./db/mongoDB');
 connectMongoDB();
 
 app.use(express.json());

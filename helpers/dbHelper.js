@@ -1,7 +1,7 @@
 const MatchModel = require('../models/matchesModel');
 const TeamModel = require('../models/teamModel');
 const PlayerModel = require('../models/playerModel');
-const { getTimestampRange } = require('./dateUtils');
+const { getTimestampRange } = require('../utils/dateUtils');
 const { getPagination } = require('./helpers');
 
 let cachedConfig = null;

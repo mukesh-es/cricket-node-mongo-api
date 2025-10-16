@@ -1,8 +1,8 @@
 const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList, getTeamsList } = require('../utils/dbHelper');
-const { getApiName, getFieldName } = require('../utils/helpers');
+const { getFieldByAPI, getMatchesList, getTeamsList } = require('../helpers/dbHelper');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.info = async(req, res) => {
     try{

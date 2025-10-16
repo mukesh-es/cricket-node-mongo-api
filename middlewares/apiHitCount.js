@@ -1,6 +1,6 @@
 const apiHit = require('../models/apiHitModel');
 const {formatDate} = require('../utils/dateUtils');
-const { getApiName } = require('../utils/helpers');
+const { getApiName } = require('../helpers/helpers');
 
 const apiHitCount = async (req, res, next) => {
     try{

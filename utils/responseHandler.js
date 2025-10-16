@@ -1,6 +1,6 @@
-const { HTTP_CODE } = require("./consants");
+const { HTTP_CODE } = require("../config/consants");
 const configModel = require('../models/configModel');
-const { getConfigSync } = require("./apiConfigHelper");
+const { getConfigSync } = require("../helpers/configHelper");
 
 const requestSuccess = (res, message = "success", data = {}, status = HTTP_CODE.SUCCESS) => {
   if (typeof data === 'string') {

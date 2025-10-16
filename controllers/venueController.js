@@ -1,8 +1,8 @@
 const VenueModel = require('../models/venueModel');
 const MatchModel = require('../models/matchesModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../utils/dbHelper');
-const { getApiName, getFieldName, getPagination } = require('../utils/helpers');
+const { getFieldByAPI } = require('../helpers/dbHelper');
+const { getApiName, getFieldName, getPagination } = require('../helpers/helpers');
 
 exports.info = async(req, res) => {
     try{
