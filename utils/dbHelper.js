@@ -4,6 +4,19 @@ const PlayerModel = require('../models/playerModel');
 const { getTimestampRange } = require('./dateUtils');
 const { getPagination } = require('./helpers');
 
+let cachedConfig = null;
+
+const getConfig = async () => {
+  if (!cachedConfig) {
+     try {
+        cachedConfig = await configModel.findOne();
+    } catch (err) {
+        console.error("Failed to load config:", err);
+    }
+  }
+  return cachedConfig;
+};
+
 async function getFieldByAPI(Model, apiName, filters={}) {
     try{
         const doc = await Model.findOne(filters).lean();

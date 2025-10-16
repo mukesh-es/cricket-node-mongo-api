@@ -1,6 +1,8 @@
 const { HTTP_CODE } = require("./consants");
+const configModel = require('../models/configModel');
+const { getConfigSync } = require("./apiConfigHelper");
 
-const requestSuccess = (res, message = "Success", data = {}, status = HTTP_CODE.SUCCESS) => {
+const requestSuccess = (res, message = "success", data = {}, status = HTTP_CODE.SUCCESS) => {
   if (typeof data === 'string') {
     try {
       data = JSON.parse(data);
@@ -8,9 +10,10 @@ const requestSuccess = (res, message = "Success", data = {}, status = HTTP_CODE.
       data = [];
     }
   }
-  
+
   const apiResponse = generateMetadata({
     status: "ok",
+    message: message,
     response: data ? data : [],
   });
   return res.status(status).json(apiResponse);
@@ -23,22 +26,26 @@ const requestFailed = (res, message = "Something went wrong", status = HTTP_CODE
 const generateMetadata = (content = {}) => {
   if (typeof content !== "object" || content === null) return content;
 
-  const result = { ...content };
+  const metaData = { ...content };
 
-  if (!result.etag) {
+  if (!metaData.etag) {
     const hex = () =>
       Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
         .substring(1);
-    result.etag = Array(8).fill(0).map(hex).join("");
+    metaData.etag = Array(8).fill(0).map(hex).join("");
   }
 
   const now = new Date().toISOString().slice(0, 19).replace("T", " ");
-  if (!result.modified) result.modified = now;
-  if (!result.datetime) result.datetime = now;
-  if (!result.api_version) result.api_version = "5.0.12";
+  if (!metaData.modified) metaData.modified = now;
+  if (!metaData.datetime) metaData.datetime = now;
+  
+  const apiConfig = getConfigSync();
+  if (metaData && apiConfig.api_version) {
+      metaData.api_version = apiConfig.api_version;
+  }
 
-  return result;
+  return metaData;
 };
 
 
