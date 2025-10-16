@@ -1,6 +1,7 @@
+const { HTTP_CODE } = require('../config/consants');
 const { redisClient, redisEnabled } = require('../config/redis');
 const { getApiName } = require('../helpers/helpers');
-const { requestSuccess, requestFailed } = require('../utils/responseHandler');
+const { sendResponse } = require('../utils/responseHandler');
 
 const cache = ({cacheKey, ttl = process.env.REDIS_DEFAULT_TTL}={}) => {
     return async(req, res, next) => {
@@ -13,7 +14,7 @@ const cache = ({cacheKey, ttl = process.env.REDIS_DEFAULT_TTL}={}) => {
         const key = `mongo_${cacheKey}:${req.originalUrl}`;
         try{
             const cachedData = await redisClient.get(key);
-            if(cachedData) return requestSuccess(res, "Data fetched from cache", cachedData);
+            if(cachedData) return sendResponse(res, HTTP_CODE.SUCCESS, cachedData);
 
             const originalJson = res.json.bind(res);
             res.json = async (body) => {

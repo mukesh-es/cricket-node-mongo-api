@@ -23,9 +23,9 @@ exports.fieldData = async(req, res) => {
             result  = await getFieldByAPI(TourStatModel, fieldName, filters);
         }
         
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -38,8 +38,8 @@ exports.stats = async(req, res) => {
         }
         const filters = {tournament_id: Number(tournamentId)};
         const result = await getFieldByAPI(TourStatModel, fieldName, filters);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

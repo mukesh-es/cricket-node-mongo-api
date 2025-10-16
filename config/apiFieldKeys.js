@@ -10,6 +10,7 @@ const apiFieldsKeys = {
     // Matches Innings
     matches_innings_commentary: "innings_commentary",
     matches_innings_content: "innings_content",
+    matches_playerwagon: "innings_playerwagon",
 
     // Teams
     teams_player: "teams_player",

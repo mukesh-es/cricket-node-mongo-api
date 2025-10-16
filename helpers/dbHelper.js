@@ -1,8 +1,11 @@
 const MatchModel = require('../models/matchesModel');
 const TeamModel = require('../models/teamModel');
 const PlayerModel = require('../models/playerModel');
+const CompetitionModel = require('../models/competitionModel');
+
 const { getTimestampRange } = require('../utils/dateUtils');
 const { getPagination } = require('./helpers');
+const { formatCompetitionInfo } = require('./formatHelper');
 
 let cachedConfig = null;
 
@@ -32,7 +35,7 @@ async function getMatchesList(inputs) {
     try{
         let filters = {};
         let orderType = 'DESC';
-        const { status, cid, team_id, date, paged, per_page } = inputs;
+        const { status, cid, team_id, venue_id, date, paged, per_page } = inputs;
         if(status && status > 0){
             if(status == 1){
                 orderType = 'ASC';
@@ -70,15 +73,14 @@ async function getMatchesList(inputs) {
             ];
         }
 
+        if(venue_id && venue_id > 0){
+            filters.venue_id = Number(venue_id);
+        }
         const pagination = getPagination(paged, per_page);
         const result = await MatchModel.find(filters, 'match_info_for_list').sort(orderType).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.match_info_for_list)).flat();
-            return {
-                items: items,
-                total_items: String(items.length),
-                total_pages: 1
-            }
+            return itemsResponse(items);
         }
         return null;
     }catch(err){
@@ -99,11 +101,7 @@ async function getTeamsList(inputs) {
         const result = await TeamModel.find(filters, 'teams_info_for_list').skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.teams_info_for_list)).flat();
-            return {
-                items: items,
-                total_items: String(items.length),
-                total_pages: 1
-            }
+            return itemsResponse(items);
         }
         return null;
     }catch(err){
@@ -124,11 +122,7 @@ async function getPlayersList(inputs) {
         const result = await PlayerModel.find(filters, 'players_list').skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.players_list)).flat();
-            return {
-                items: items,
-                total_items: String(items.length),
-                total_pages: 1
-            }
+            return itemsResponse(items);
         }
         return null;
     }catch(err){
@@ -136,9 +130,38 @@ async function getPlayersList(inputs) {
     }
 }
 
+async function getCompetitionsList(inputs) {
+    try{
+        let filters = {};
+        const {season, paged, per_page} = inputs;
+
+        if(season){
+            filters.season = String(season);
+        }
+        const pagination = getPagination(paged, per_page);
+        const result = await CompetitionModel.find(filters, 'competitions_info').skip(pagination.offset).limit(pagination.limit);
+        if(result){
+            const items = result.map(r => formatCompetitionInfo(JSON.parse(r.competitions_info))).flat();
+            return itemsResponse(items);
+        }
+        return null;
+    }catch(err){
+        return null;
+    }
+}
+
+function itemsResponse(items){
+    return {
+        items: items,
+        total_items: String(items.length),
+        total_pages: 1
+    }
+}
+
 module.exports = { 
     getFieldByAPI, 
     getMatchesList, 
     getTeamsList,
-    getPlayersList 
+    getPlayersList,
+    getCompetitionsList
 };

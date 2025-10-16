@@ -9,9 +9,9 @@ exports.info = async(req, res) => {
         const {teamId} = req.params;
         const filters = {tid: Number(teamId)};
         const result = await getFieldByAPI(TeamModel, 'teams_info', filters);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -19,9 +19,9 @@ exports.teams = async(req, res) => {
     try{
         const queryParams = req.query;
         const result = await getTeamsList(queryParams);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -48,8 +48,8 @@ exports.fieldData = async(req, res) => {
             let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;
             result = await getFieldByAPI(resourceModel, fieldName, filters);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

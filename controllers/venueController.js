@@ -1,7 +1,7 @@
 const VenueModel = require('../models/venueModel');
 const MatchModel = require('../models/matchesModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../helpers/dbHelper');
+const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
 const { getApiName, getFieldName, getPagination } = require('../helpers/helpers');
 
 exports.info = async(req, res) => {
@@ -9,16 +9,16 @@ exports.info = async(req, res) => {
         const {venueId} = req.params;
         const filters = {venue_id: Number(venueId)};
         const result = await getFieldByAPI(VenueModel, 'venues_info', filters);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
 exports.fieldData = async(req, res) => {
     try{
         const {venueId, resource} = req.params;
-        const {paged, per_page} = req.query;
+        const queryParams = req.query;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
         const filters = {
@@ -26,14 +26,14 @@ exports.fieldData = async(req, res) => {
         };
 
         let result;
-        if(fieldName == "venues_matches"){
-            const pagination = getPagination(paged, per_page);
-            result = await MatchModel.find(filters).skip(pagination.offset).limit(pagination.limit);
+        if(resource === 'matches'){
+            queryParams.venue_id = venueId;
+            result = await getMatchesList(queryParams);
         }else{
             result = await getFieldByAPI(VenueModel, fieldName, filters);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

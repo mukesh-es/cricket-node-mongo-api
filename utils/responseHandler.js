@@ -2,26 +2,30 @@ const { HTTP_CODE } = require("../config/consants");
 const configModel = require('../models/configModel');
 const { getConfigSync } = require("../helpers/configHelper");
 
-const requestSuccess = (res, message = "success", data = {}, status = HTTP_CODE.SUCCESS) => {
-  if (typeof data === 'string') {
+const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CODE.SUCCESS}) => {
+  if (typeof result === 'string') {
     try {
-      data = JSON.parse(data);
+      result = JSON.parse(result);
     } catch (err) {
-      data = [];
+      result = [];
     }
   }
 
   const apiResponse = generateMetadata({
     status: "ok",
     message: message,
-    response: data ? data : [],
+    response: result ? result : [],
   });
-  return res.status(status).json(apiResponse);
+  return sendResponse(res, status, apiResponse);
 };
 
-const requestFailed = (res, message = "Something went wrong", status = HTTP_CODE.FAILED) => {
-  return res.status(status).json({ error: message });
+const requestFailed = ({res, message = "Something went wrong", status = HTTP_CODE.FAILED}) => {
+  return sendResponse(res, status, {error: message});
 };
+
+const sendResponse = (res, status, apiResponse) => {
+  return res.status(status).json(apiResponse);
+}
 
 const generateMetadata = (content = {}) => {
   if (typeof content !== "object" || content === null) return content;

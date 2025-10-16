@@ -5,8 +5,8 @@ const { getFieldByAPI } = require('../helpers/dbHelper');
 exports.fieldData = async(req, res) => {
     try{
         const result = await getFieldByAPI(RankTourModel, 'iccranks');
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }

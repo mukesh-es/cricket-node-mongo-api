@@ -1,7 +1,6 @@
 const HighlightModel = require('../models/highlightModel');
 const CompetitionModel = require('../models/competitionModel');
 const CompStatModel = require('../models/compStatModel');
-const MatchModel = require('../models/matchesModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
@@ -13,9 +12,9 @@ exports.info = async(req, res) => {
         const {competitionId} = req.params;
         const filters = {cid: Number(competitionId)};
         const result = await getFieldByAPI(CompetitionModel, 'competitions_info', filters);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -39,9 +38,9 @@ exports.fieldData = async(req, res) => {
         }else{
             result = await getFieldByAPI(CompetitionModel, fieldName, filters);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -56,9 +55,9 @@ exports.competitions = async(req, res) => {
         if(fieldName){
             result = await getFieldByAPI(HighlightModel, fieldName);
         }
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
 
@@ -71,8 +70,8 @@ exports.stats = async(req, res) => {
         }
         const filters = {cid: Number(competitionId)};
         const result = await getFieldByAPI(CompStatModel, fieldName, filters);
-        requestSuccess(res, "Data success", result);
+        requestSuccess({res, result});
     } catch(err){
-        requestFailed(res, "Something went wrong");
+        requestFailed({res, err});
     }
 }
