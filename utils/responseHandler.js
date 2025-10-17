@@ -20,7 +20,11 @@ const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CO
 };
 
 const requestFailed = ({res, message = "Something went wrong", status = HTTP_CODE.FAILED, err}) => {
-  return sendResponse(res, status, {error: `${message}: ${err}`});
+  const apiResponse = generateMetadata({
+    status: "error",
+    message: `${message}${err ? ` : ${err}` : ''}`,
+  });
+  return sendResponse(res, status, apiResponse);
 };
 
 const sendResponse = (res, status, apiResponse) => {
