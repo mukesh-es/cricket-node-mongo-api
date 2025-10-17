@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { requestFailed } = require('./utils/responseHandler');
+const apiAuth = require('./middlewares/apiAuth');
 const apiLogger = require('./middlewares/apiLogger');
 const apiHit = require('./middlewares/apiHitCount');
 
@@ -16,6 +17,8 @@ const startServer = async () => {
       await connectMongoDB();
       console.log("MongoDB connected");
 
+      // Middlewares
+      app.use(apiAuth);
       app.use(apiLogger);
       app.use(apiHit);
       

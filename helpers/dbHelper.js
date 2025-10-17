@@ -9,19 +9,6 @@ const { getTimestampRange } = require('../utils/dateUtils');
 const { getPagination } = require('./helpers');
 const { formatCompetitionInfo } = require('./formatHelper');
 
-let cachedConfig = null;
-
-const getConfig = async () => {
-  if (!cachedConfig) {
-     try {
-        cachedConfig = await configModel.findOne();
-    } catch (err) {
-        console.error("Failed to load config:", err);
-    }
-  }
-  return cachedConfig;
-};
-
 async function getFieldByAPI(Model, apiName, filters={}) {
     try{
         const doc = await Model.findOne(filters).lean();
@@ -234,7 +221,6 @@ async function getReelsList(inputs) {
     }
 }
 
-
 async function getNewsList(inputs) {
     try{
         let filters = {};
@@ -286,7 +272,7 @@ function itemsResponse(items){
     }
 }
 
-module.exports = { 
+module.exports = {
     getFieldByAPI, 
     getMatchesList, 
     getTeamsList,

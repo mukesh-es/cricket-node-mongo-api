@@ -22,4 +22,13 @@ const reloadConfig = async () => {
   return cachedConfig;
 };
 
-module.exports = { getConfigSync, reloadConfig };
+
+function verifyToken(token){
+    const apiConfig = cachedConfig ? cachedConfig :  getConfigSync();
+    if(apiConfig && apiConfig.token === token){
+        return true;
+    }
+    return false;
+}
+
+module.exports = { getConfigSync, reloadConfig, verifyToken };
