@@ -19,8 +19,8 @@ const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CO
   return sendResponse(res, status, apiResponse);
 };
 
-const requestFailed = ({res, message = "Something went wrong", status = HTTP_CODE.FAILED}) => {
-  return sendResponse(res, status, {error: message});
+const requestFailed = ({res, message = "Something went wrong", status = HTTP_CODE.FAILED, err}) => {
+  return sendResponse(res, status, {error: `${message}: ${err}`});
 };
 
 const sendResponse = (res, status, apiResponse) => {

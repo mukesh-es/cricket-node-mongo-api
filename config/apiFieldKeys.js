@@ -22,7 +22,7 @@ const apiFieldsKeys = {
     // Players
     players_advancestats: "players_advancestats",
     players_list: "players_list",
-    players_matches: "players_matches",
+    players_playermatches: "players_matches",
     players_stats: "players_stats",
 
     // Venue
