@@ -205,8 +205,6 @@ async function getReelsList(inputs) {
         // Pagination (hardcoded to match LIMIT 0, 60, but respecting getPagination)
         const pagination = getPagination(paged || 1, per_page || 60);
 
-        console.log('filters: ', filters);
-
         const result = await ReelModel.find(query)
         .sort({ orderby_time: -1 })
         .skip(pagination.offset)

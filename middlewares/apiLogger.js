@@ -5,7 +5,8 @@ const apiLogger = (req, res, next) => {
   const date = new Date().toISOString().split('T')[0];
   const filePath = `logs/${date}.log`;
 
-  console.log('API: ', req.originalUrl);
+  const currentTime = formatDateTime();
+  const requestURL = req.originalUrl;
 
   const requestStart = Date.now();
 
@@ -22,6 +23,8 @@ const apiLogger = (req, res, next) => {
     logData.request_end_time = formatDateTime(requestEnd);
     logData.response_time = `${requestEnd-requestStart} ms`;
     logData.response = JSON.stringify(body);
+
+    console.log(`[${currentTime}], ${requestURL}, ${body.message} (${body.status})`);
     
     saveToFile(filePath, logData);
     originalJson(body);

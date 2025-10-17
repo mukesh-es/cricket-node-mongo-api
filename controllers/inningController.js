@@ -5,10 +5,13 @@ const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.fieldData = async(req, res) => {
     try{
-        const {matchId, inningNumber} = req.params;
+        let {matchId, inningNumber} = req.params;
         const {order} = req.query;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
+        if(!inningNumber || inningNumber <= 0){
+            inningNumber = 1;
+        }
         const filters = {
             match_id: Number(matchId),
             inning_number: Number(inningNumber),
