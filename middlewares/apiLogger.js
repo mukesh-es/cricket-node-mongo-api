@@ -5,6 +5,8 @@ const apiLogger = (req, res, next) => {
   const date = new Date().toISOString().split('T')[0];
   const filePath = `logs/${date}.log`;
 
+  console.log('API: ', req.originalUrl);
+
   const requestStart = Date.now();
 
   const logData = {

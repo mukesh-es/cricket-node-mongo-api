@@ -4,7 +4,7 @@ function getApiName(path) {
     const cleanPath = path.split('?')[0];
     const parts = cleanPath.split('/').filter(Boolean).filter(p => isNaN(p));
     const apiName = parts.join('_') || 'root';
-    console.log('apiName: ', apiName);
+    // console.log('apiName: ', apiName);
     return apiName;
 }
 

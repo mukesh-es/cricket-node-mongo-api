@@ -17,7 +17,6 @@ const apiHitCount = async (req, res, next) => {
             {$inc: {count: 1}},
             {upsert: true}
         );
-        console.log(`API hit recorded: ${apiName} on ${today}`);
     } catch(err){
         console.error('API tracking error: ', err.message);
     }
