@@ -22,6 +22,7 @@ exports.fieldData = async(req, res) => {
     try{
         const {competitionId, resource} = req.params;
         const queryParams = req.query;
+        const {format} = queryParams;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
         const filters = {
@@ -35,6 +36,11 @@ exports.fieldData = async(req, res) => {
         }else if(resource === 'matches'){
             queryParams.cid = competitionId;
             result = await getMatchesList(queryParams);
+        }else if(resource === 'crickettracker'){
+            if(format){
+                filters.format = format;
+            }
+            result = await getFieldByAPI(CompStatModel, resource, filters);
         }else{
             result = await getFieldByAPI(CompetitionModel, fieldName, filters);
         }

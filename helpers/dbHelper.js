@@ -2,6 +2,8 @@ const MatchModel = require('../models/matchesModel');
 const TeamModel = require('../models/teamModel');
 const PlayerModel = require('../models/playerModel');
 const CompetitionModel = require('../models/competitionModel');
+const ReelModel = require('../models/reelModel');
+const NewsModel = require('../models/newsModel');
 
 const { getTimestampRange } = require('../utils/dateUtils');
 const { getPagination } = require('./helpers');
@@ -150,6 +152,132 @@ async function getCompetitionsList(inputs) {
     }
 }
 
+async function getReelsList(inputs) {
+    try {
+        const currentTime = Math.floor(Date.now() / 1000) + 5*60*60 + 30*60; // seconds
+        let {
+            filter_type,
+            filter_value,
+            news_cat,
+            type,
+            country,
+            latest_version,
+            paged,
+            per_page
+        } = inputs;
+
+        filter_type = Number(filter_type);
+        filter_value = Number(filter_value);
+        const postTypeCode = 9;
+
+        let compMatchesIds = [];
+        if (filter_type === 1 && filter_value) {
+            const matchesResult = await MatchModel.find({ cid: filter_value }, 'match_id');
+            compMatchesIds = matchesResult.map(m => m.match_id);
+            compMatchesIds.push(filter_value);
+        }
+
+        const filters = [];
+
+        // Hardcoded connectfrom IN ('1', '3')
+        filters.push({ connectfrom: { $in: ['1', '3'] } });
+
+        // Hardcoded connectId IN ('91011', '91012', ..., '91041', '129650')
+        filters.push({
+        connectId: {
+            $in: compMatchesIds
+        }
+        });
+
+        // connectfrom != '9'
+        filters.push({ connectfrom: { $ne: postTypeCode } });
+
+        filters.push({
+        $or: [
+            { scheduled: { $gt: 0, $lte: currentTime } },
+            { scheduled: 0 }
+        ]
+        });
+
+        // country IN ('all')
+        filters.push({ country: { $in: ['all'] } });
+
+        // media_platform <= 0 if latest_version
+        if (latest_version) {
+            filters.push({ media_platform: { $lte: 0 } });
+        }
+
+        // news_cat filter if exists
+        if (news_cat) {
+            filters.push({ news_cat: Number(news_cat) });
+        }
+
+        // Final query
+        const query = filters.length > 0 ? { $and: filters } : {};
+
+        // Pagination (hardcoded to match LIMIT 0, 60, but respecting getPagination)
+        const pagination = getPagination(paged || 1, per_page || 60);
+
+        console.log('filters: ', filters);
+
+        const result = await ReelModel.find(query)
+        .sort({ orderby_time: -1 })
+        .skip(pagination.offset)
+        .limit(pagination.limit);
+
+        if (result) return itemsResponse(result);
+        return null;
+
+    } catch (err) {
+        console.error('Error in getReelsList:', err);
+        return null;
+    }
+}
+
+
+async function getNewsList(inputs) {
+    try{
+        let filters = {};
+
+        let {
+            id,
+            country, 
+            category,
+            news_cat,
+            per_page, 
+            paged
+        } = inputs;
+        
+        id = id > 0 ? Number(id) : 0;
+
+        const countries = ['all'];
+        if(country && country != ''){
+            countries.push(country.toLowerCase());
+        }
+        
+        if(news_cat){
+            filters.news_cat = Number(news_cat);
+        }
+
+        if(id && id > 0){
+            filters.news_id = id;
+        }
+        if(category){
+            filters.category = category;
+        }
+        filters.country = { $in: countries};
+       
+        const pagination = getPagination(paged, per_page);
+        const result = await NewsModel.find(filters).sort({ created: -1 }).skip(pagination.offset).limit(pagination.limit);
+        if(result){
+            return itemsResponse(result);
+        }
+        return null;
+    }catch(err){
+        return null;
+    }
+}
+
 function itemsResponse(items){
     return {
         items: items,
@@ -163,5 +291,7 @@ module.exports = {
     getMatchesList, 
     getTeamsList,
     getPlayersList,
-    getCompetitionsList
+    getCompetitionsList,
+    getReelsList,
+    getNewsList
 };

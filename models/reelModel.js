@@ -12,7 +12,7 @@ const reelSchema = new mongoose.Schema({
     credit_url: {type: String},
     ctype: {type: String},
     logo_url: {type: String},
-    media_platform: {type: String},
+    media_platform: {type: Number},
     news_cat: {type: Number},
     orderby_time: {type: String},
     scheduled: {type: String},

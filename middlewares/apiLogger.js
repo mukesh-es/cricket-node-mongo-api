@@ -1,18 +1,32 @@
-// middlewares/apiLogger.js
-const apiLogger = (req, res, next) => {
+const saveToFile = require('../helpers/fileHelper');
+const { formatDateTime } = require('../utils/dateUtils');
 
-  // Print request info
-  console.log(`\n[API REQUEST] ${req.method} ${req.originalUrl}`);
+const apiLogger = (req, res, next) => {
+  const date = new Date().toISOString().split('T')[0];
+  const filePath = `logs/${date}.log`;
+
+  const requestStart = Date.now();
+
+  const logData = {
+    method: req.method,
+    url: req.originalUrl,
+    request_start_time: formatDateTime(requestStart),
+  };
 
   // Override res.json to print response
   const originalJson = res.json.bind(res);
   res.json = (body) => {
-    console.log(`[API RESPONSE] ${req.method} ${req.originalUrl}`);
-    console.log(JSON.stringify(body, null, 2)); // pretty print
-    originalJson(body); // send response to client
+    const requestEnd = Date.now();
+    logData.request_end_time = formatDateTime(requestEnd);
+    logData.response_time = `${requestEnd-requestStart} ms`;
+    logData.response = JSON.stringify(body);
+    
+    saveToFile(filePath, logData);
+    originalJson(body);
   };
 
-  next(); // continue to next middleware/controller
+
+  next();
 };
 
 module.exports = apiLogger;

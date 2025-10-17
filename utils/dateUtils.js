@@ -5,6 +5,24 @@ function formatDate(date=new Date()) {
   return `${y}-${m}-${d}`;
 }
 
+function formatDateTime(date = new Date()) {
+  // If timestamp number is passed, convert to Date
+  if (typeof date === 'number') {
+    date = new Date(date);
+  }
+
+  const pad = (n) => (n < 10 ? '0' + n : n);
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}.${seconds}`;
+}
+
 function toUnixTimestamp(dateStr) {
   return Math.floor(new Date(dateStr).getTime() / 1000);
 }
@@ -29,5 +47,6 @@ module.exports = {
   formatDate, 
   toUnixTimestamp,
   getTimestampRange,
-  getDateMonth
+  getDateMonth,
+  formatDateTime
 };
