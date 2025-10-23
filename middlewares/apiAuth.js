@@ -1,5 +1,5 @@
 const { verifyToken } = require('../helpers/configHelper');
-const { requestFailed } = require('../utils/responseHandler');
+const { requestFailed, requestSuccess } = require('../utils/responseHandler');
 
 const apiAuth = (req, res, next) => {
     try{
@@ -11,6 +11,9 @@ const apiAuth = (req, res, next) => {
                 message: "Invalid token",
             });
         }
+        // return requestSuccess({res, result: {
+        //     api_name: getApiName(req.originalUrl)
+        // }});
         next();
     }catch(err){
         requestFailed({res, err});

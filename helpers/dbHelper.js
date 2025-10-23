@@ -155,62 +155,62 @@ async function getReelsList(inputs) {
 
         filter_type = Number(filter_type);
         filter_value = Number(filter_value);
+
+        const countries = ['all'];
+        if(country && country != ''){
+            countries.push(country.toLowerCase());
+        }
+
         const postTypeCode = 9;
 
-        let compMatchesIds = [];
-        if (filter_type === 1 && filter_value) {
-            const matchesResult = await MatchModel.find({ cid: filter_value }, 'match_id');
-            compMatchesIds = matchesResult.map(m => m.match_id);
-            compMatchesIds.push(filter_value);
+        const filters = {};
+
+        if (filter_type && filter_type > 0 && filter_value) {
+            if(filter_type === 1){
+                const matchesResult = await MatchModel.find({ cid: filter_value }, 'match_id');
+                const compMatchesIds = matchesResult.map(m => Number(m.match_id));
+                compMatchesIds.push(filter_value);
+
+                filters.connectfrom = {$in: [1, 3] };
+                filters.connectId = {$in: compMatchesIds};
+            }else{
+                filters.connectfrom = filter_type;
+                filters.connectId = filter_value;
+            }
         }
 
-        const filters = [];
+        if(type != 'all' ){
+		    filters.connectfrom = { $ne: postTypeCode };
+		}
 
-        // Hardcoded connectfrom IN ('1', '3')
-        filters.push({ connectfrom: { $in: ['1', '3'] } });
-
-        // Hardcoded connectId IN ('91011', '91012', ..., '91041', '129650')
-        filters.push({
-        connectId: {
-            $in: compMatchesIds
-        }
-        });
-
-        // connectfrom != '9'
-        filters.push({ connectfrom: { $ne: postTypeCode } });
-
-        filters.push({
-        $or: [
+        filters.$or = [
             { scheduled: { $gt: 0, $lte: currentTime } },
             { scheduled: 0 }
-        ]
-        });
+        ];
 
         // country IN ('all')
-        filters.push({ country: { $in: ['all'] } });
+        filters.country = { $in: countries };
 
         // media_platform <= 0 if latest_version
         if (latest_version) {
-            filters.push({ media_platform: { $lte: 0 } });
+            filters.media_platform = { $lte: 0 };
         }
 
-        // news_cat filter if exists
         if (news_cat) {
-            filters.push({ news_cat: Number(news_cat) });
+            filters.news_cat = Number(news_cat);
         }
-
-        // Final query
-        const query = filters.length > 0 ? { $and: filters } : {};
 
         // Pagination (hardcoded to match LIMIT 0, 60, but respecting getPagination)
         const pagination = getPagination(paged || 1, per_page || 60);
 
-        const result = await ReelModel.find(query)
+        const result = await ReelModel.find(filters)
         .sort({ orderby_time: -1 })
         .skip(pagination.offset)
         .limit(pagination.limit);
 
-        if (result) return itemsResponse(result);
+        if (result) {
+            return itemsResponse(result);
+        } 
         return null;
 
     } catch (err) {
