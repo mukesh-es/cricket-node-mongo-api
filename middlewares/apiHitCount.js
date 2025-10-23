@@ -1,4 +1,4 @@
-const apiHit = require('../models/apiHitModel');
+const ApiHit = require('../models/apiHitModel');
 const {formatDate, formatDateTime} = require('../utils/dateUtils');
 const { getApiName } = require('../helpers/helpers');
 
@@ -9,13 +9,17 @@ const BATCH_INTERVAL = 5 * 60 * 1000;
 const apiHitCount = async (req, res, next) => {
     try{
         const endpoint = req.path;
-        const apiName = getApiName(endpoint);
-        console.log('apiName: ', apiName);
+        const {token} = req.query;
+        const apiName = getApiName(endpoint)
         const today = formatDate();
-        const bufferKey = `${apiName}|${today}`;
+        const bufferKey = `${apiName}|${token}|${today}`;
 
         if (!apiHitBuffer[bufferKey]) {
-            apiHitBuffer[bufferKey] = { count: 0, lastSaved: Date.now() };
+            apiHitBuffer[bufferKey] = {
+                token: token,
+                count: 0, 
+                lastSaved: Date.now() 
+            };
         }
 
         apiHitBuffer[bufferKey].count++;
@@ -26,15 +30,6 @@ const apiHitCount = async (req, res, next) => {
         if (bufferItem.count >= BATCH_SIZE || timeSinceLastSave >= BATCH_INTERVAL) {
             await flushToMongo(apiName, today, bufferItem);
         }
-
-        // await apiHit.updateOne(
-        //     {
-        //         api_name: apiName,
-        //         date: today
-        //     },
-        //     {$inc: {count: 1}},
-        //     {upsert: true}
-        // );
     } catch(err){
         console.error('API tracking error: ', err.message);
     }
@@ -54,13 +49,14 @@ setInterval(async () => {
 }, 60 * 1000);
 
 async function flushToMongo(apiName, today, bufferItem) {
-    const { count } = bufferItem;
+    const { count, token } = bufferItem;
     if (count <= 0) return;
 
     try {
-        await apiHit.updateOne(
+        await ApiHit.updateOne(
             {
                 api_name: apiName,
+                token: token,
                 date: today
             },
             {
@@ -69,11 +65,6 @@ async function flushToMongo(apiName, today, bufferItem) {
             },
             {upsert: true}
         );
-        // await apiHit.updateOne(
-        //     { api_name: apiName, date: today },
-        //     { $inc: { count }, $set: { last_updated: new Date() } },
-        //     { upsert: true }
-        // );
         bufferItem.count = 0;
         bufferItem.lastSaved = Date.now();
     } catch (err) {

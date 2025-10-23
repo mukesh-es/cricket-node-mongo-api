@@ -1,5 +1,6 @@
 // helpers/configHelper.js
 const configModel = require('../models/configModel');
+const mysqlDB = require('../db/mysqlDB');
 
 let cachedConfig = null;
 
@@ -31,4 +32,22 @@ function verifyToken(token){
     return false;
 }
 
-module.exports = { getConfigSync, reloadConfig, verifyToken };
+async function getTokenData(token) {
+  try {
+    const [rows] = await mysqlDB.execute(
+      `SELECT app_id, subscription_id FROM es_user_apps WHERE token=? LIMIT 1`,
+      [token]
+    );
+
+    if (rows.length > 0) {
+      return rows[0];
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.error('DB Error:', err);
+    throw err;
+  } 
+}
+
+module.exports = { getConfigSync, reloadConfig, verifyToken, getTokenData };

@@ -22,7 +22,7 @@ exports.fieldData = async(req, res) => {
         
         if(apiName === 'season'){
             result = await getFieldByAPI(RankTourModel, 'seasons_list');
-        }else if(apiName === 'season_competitions'){
+        }else if(apiName === 'season_competitions' || apiName === 'season_competitionlist'){
             result = await getCompetitionsList(queryParams);
         }else{
             const isReel = resource == 'competitions';

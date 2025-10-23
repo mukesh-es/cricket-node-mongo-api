@@ -9,17 +9,15 @@ const apiMap = {
     tournaments_crickettracker: "tournament_crickettracker",
     tournaments_stats: "tournament_tournament_stats",
 
-    // Matches
-    matches: "matches",
-    matches_info: "match_info",
-    matches_statistics: "match_statistics",
-    matches_content: "match_match_content",
-    matches_newpoint2: "match_new_point2",
-    matches_advance: "match_advanced_stats",
-    matches_playerwagon: "match_player_match_wagon",
-    matches_innings_commentary: "match_inning_commentary",
-    matches_innings_content: "match_inning_content",
-    matches_wagons: "match_wagons",
+    // Competitions
+    competitions: "competitions",
+    competitions_info: "competition_overview",
+    competitions_squads: "competition_squads",
+    competitions_standings: "competition_standings",
+    competitions_stats: "competition_stats",
+    competitions_matches: "competition_matches",
+    competitions_crickettracker: "competition_cricket_tracker",
+    competitions_teams: "competition_teams",
 
     // Teams
     teams: "teams",
@@ -31,14 +29,17 @@ const apiMap = {
     teams_crickettracker: "team_crickettracker",
     teams_advance: "teams_advanced_stats",
 
-    // Competitions
-    competitions: "competitions",
-    competitions_info: "competition_overview",
-    competitions_squads: "competition_squads",
-    competitions_standings: "competition_standings",
-    competitions_stats: "competition_stats",
-    competitions_matches: "competition_matches",
-    competitions_crickettracker: "competition_cricket_tracker",
+    // Matches
+    matches: "matches",
+    matches_info: "match_info",
+    matches_statistics: "match_statistics",
+    matches_content: "match_match_content",
+    matches_newpoint2: "match_new_point2",
+    matches_advance: "match_advanced_stats",
+    matches_playerwagon: "match_player_match_wagon",
+    matches_innings_commentary: "match_inning_commentary",
+    matches_innings_content: "match_inning_content",
+    matches_wagons: "match_wagons",
 
     // Players
     players: "players",
@@ -54,6 +55,7 @@ const apiMap = {
     venues_stats: "venue_venue_stats_app",
 
     // Other
+    root: "front",
     iccranks: "iccranks",
     seasons_competitions: "season_competitions", // Reels
     seasons_news: "season_news",
