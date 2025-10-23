@@ -29,9 +29,9 @@ exports.fieldData = async(req, res) => {
             const isNews = resource == 'news';
             
             if(isReel){
-                result = getReelsList(queryParams);
+                result = await getReelsList(queryParams);
             }else if(isNews){
-                result = getNewsList(queryParams);
+                result = await getNewsList(queryParams);
             }
         }
         requestSuccess({res, result});
