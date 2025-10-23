@@ -2,14 +2,16 @@ const { apiFieldsKeys } = require("../config/apiFieldKeys");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
-    const pathArray = cleanPath.split('/').filter(Boolean);
-    const parts = pathArray.filter(p => isNaN(p));
+    const pathSegments = cleanPath.split('/').filter(Boolean);
+    const parts = pathSegments.filter(p => isNaN(p));
+    const segmentsCount = pathSegments.length;
     let suffix = '';
-    if(pathArray.length == 2 && !isNaN(pathArray[1])){
+    if(segmentsCount == 2 && !isNaN(pathSegments[1])){
         suffix = '_info';
+    }else if(segmentsCount > 2  && pathSegments[2] === 'stats'){
+        return `${pathSegments[0]}_stats`;
     }
     const apiName = `${parts.join('_')}${suffix}` || 'root';
-    // console.log('apiName: ', apiName);
     return apiName;
 }
 

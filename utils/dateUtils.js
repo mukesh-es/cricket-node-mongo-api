@@ -23,8 +23,9 @@ function formatDateTime(date = new Date()) {
   return `${year}-${month}-${day} ${hours}:${minutes}.${seconds}`;
 }
 
-function toUnixTimestamp(dateStr) {
-  return Math.floor(new Date(dateStr).getTime() / 1000);
+function getUnixTimestamp(dateStr) {
+  const date = dateStr ? new Date(dateStr) : new Date();
+  return Math.floor(date.getTime() / 1000);
 }
 
 function getTimestampRange(dateStr) {
@@ -45,7 +46,7 @@ function getDateMonth(dateStr){
 
 module.exports = { 
   formatDate, 
-  toUnixTimestamp,
+  getUnixTimestamp,
   getTimestampRange,
   getDateMonth,
   formatDateTime

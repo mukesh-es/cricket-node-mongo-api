@@ -23,11 +23,11 @@ async function getFieldByAPI(Model, apiName, filters={}) {
 async function getMatchesList(inputs) {
     try{
         let filters = {};
-        let orderType = 'DESC';
+        let orderType = -1;
         const { status, cid, team_id, venue_id, date, paged, per_page } = inputs;
         if(status && status > 0){
             if(status == 1){
-                orderType = 'ASC';
+                orderType = 1;
             }
             filters.status_id = Number(status);
         }
@@ -66,7 +66,7 @@ async function getMatchesList(inputs) {
             filters.venue_id = Number(venue_id);
         }
         const pagination = getPagination(paged, per_page);
-        const result = await MatchModel.find(filters, 'match_info_for_list').sort(orderType).skip(pagination.offset).limit(pagination.limit);
+        const result = await MatchModel.find(filters, 'match_info_for_list').sort({timestamp_start: orderType}).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.match_info_for_list)).flat();
             return itemsResponse(items);
@@ -122,10 +122,13 @@ async function getPlayersList(inputs) {
 async function getCompetitionsList(inputs) {
     try{
         let filters = {};
-        const {season, paged, per_page} = inputs;
+        const {season, country, paged, per_page} = inputs;
 
         if(season){
             filters.season = String(season);
+        }
+        if(country){
+            filters.country = country;
         }
         const pagination = getPagination(paged, per_page);
         const result = await CompetitionModel.find(filters, 'competitions_info').skip(pagination.offset).limit(pagination.limit);
