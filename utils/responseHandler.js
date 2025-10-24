@@ -12,8 +12,8 @@ const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CO
 
   const apiResponse = generateMetadata({
     status: "ok",
-    message: message,
     response: result ? result : [],
+    message: message,
   });
   return sendResponse(res, status, apiResponse);
 };
