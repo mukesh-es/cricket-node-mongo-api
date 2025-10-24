@@ -4,4 +4,37 @@ const HTTP_CODE = {
   FAILED: 500,
 };
 
-module.exports = { HTTP_CODE };
+const MEDIA_TYPE_CODE = {
+  1: 'Image',
+  2: 'Video'
+};
+
+const MEDIA_ENTITY_CODE = {
+  1: 'Series',
+  2: 'Teams',
+  3: 'Matches',
+  4: 'Players',
+  9: 'Posts'
+};
+
+const NEWS_CATEGORIES = {
+  1: 'Match Previews',
+  2: 'Players',
+  3: 'Fantasy',
+  4: 'Trending',
+  5: 'Controversies',
+  6: 'Stats Corner'
+};
+const NEWS_APP_CATEGORIES = {
+  1: 'Hollywood',
+  2: 'Sports',
+  3: 'Politics',
+};
+
+module.exports = { 
+  HTTP_CODE, 
+  MEDIA_TYPE_CODE, 
+  MEDIA_ENTITY_CODE,
+  NEWS_CATEGORIES,
+  NEWS_APP_CATEGORIES,
+};

@@ -10,16 +10,16 @@ const reelSchema = new mongoose.Schema({
     country: {type: String},
     credit_title: {type: String},
     credit_url: {type: String},
-    ctype: {type: String},
+    ctype: {type: Number},
     logo_url: {type: String},
     media_platform: {type: Number},
     news_cat: {type: Number},
-    orderby_time: {type: String},
-    scheduled: {type: String},
+    orderby_time: {type: Number},
+    scheduled: {type: Number},
     subtitle: {type: String},
     thumbnail: {type: String},
-    timestamp: {type: String},
-    updated: {type: String},
+    timestamp: {type: Number},
+    updated: {type: Number},
 });
 
 module.exports = mongoose.model('Reel', reelSchema, 'app_reels_data');

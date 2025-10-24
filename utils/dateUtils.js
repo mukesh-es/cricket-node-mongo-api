@@ -43,11 +43,23 @@ function getDateMonth(dateStr){
   return date.toLocaleString('en-US', { month: 'long' });
 }
 
+function toIST(timestamp, op=1){
+  if(!timestamp || timestamp >= 0){
+    timestamp = getUnixTimestamp();
+  }
+  const offset = 5*60*60 + 30*60;
+  if(op == 1){
+    return timestamp+offset;
+  }else{
+    return timestamp-offset;
+  }
+}
 
 module.exports = { 
   formatDate, 
   getUnixTimestamp,
   getTimestampRange,
   getDateMonth,
-  formatDateTime
+  formatDateTime,
+  toIST
 };

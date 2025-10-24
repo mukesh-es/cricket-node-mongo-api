@@ -19,22 +19,22 @@ function getFieldName(apiName){
     return apiFieldsKeys?.[apiName] || null;
 }
 
-function getPagination(pageNumber=1, perPage=20) {
-    if(!pageNumber){
-        pageNumber=1
-    }
-    if(!perPage){
-        perPage=20
-    }
-    if(perPage > 80) perPage = 80;
+function getPagination(pageNumber = 1, perPage = 20) {
+    pageNumber = Number(pageNumber) || 1;
+    perPage = Math.min(Number(perPage) || 20, 80);
+
     return {
         offset: (pageNumber - 1) * perPage,
         limit: perPage
-    } 
+    };
 }
 
 function getPages(totalCount, limit){
     return Math.ceil(totalCount / limit)
 }
 
-module.exports = { getApiName, getFieldName, getPagination, getPages };
+function getApiURL(path){
+    return `${process.env.APPAPI_CDN_BASE}${path}`;
+}
+
+module.exports = { getApiName, getFieldName, getPagination, getPages, getApiURL };
