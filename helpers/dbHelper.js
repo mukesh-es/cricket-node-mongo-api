@@ -26,7 +26,9 @@ async function getMatchesList(inputs) {
     try{
         let filters = {};
         let { status, cid, team_id, venue_id, date, type, order, paged, per_page } = inputs;
-        const orderStatus = order && order!= '';
+        if(!order || order == ''){
+            order = 'desc';
+        }
         if(status && status > 0){
             if(status == 1 && !orderStatus){
                 order = 'asc';
@@ -43,9 +45,6 @@ async function getMatchesList(inputs) {
             }
             filters.status_id = {$in: [3, 1]};
 		}
-        if(!orderStatus){
-            order = 'asc';
-        }
 
         const sortingOrder = order == 'desc' ? -1 : 1;
 
