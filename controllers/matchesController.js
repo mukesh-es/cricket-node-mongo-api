@@ -4,25 +4,28 @@ const InningModel = require('../models/inningModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getApiName, getFieldName, getApiURL } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
 
 exports.fieldData = async(req, res) => {
     try{
-        const {matchId} = req.params;
+        const {matchId, resource} = req.params;
         const {iid, pid} = req.query;
         const apiName = getApiName(req.originalUrl);
         const fieldName = getFieldName(apiName);
         let result;
         let resourceModel;
         let filters = {match_id: Number(matchId)};
-        if(iid && apiName === 'matches_playerwagon'){
+        const apiURL = getApiURL(req.originalUrl);
+        if(iid && resource === 'playerwagon'){
             if(pid == 'all'){
                 filters.iid = Number(iid);
                 resourceModel = InningModel;
             }else{
-                result = await callAPI(`${process.env.APPAPI_CDN_BASE}${req.originalUrl}`);
+                result = await callAPI(apiURL);
             }
+        }else if(resource === 'newpoint2'){
+            result = await callAPI(apiURL);
         }else{
             resourceModel = MatchModel;
         }

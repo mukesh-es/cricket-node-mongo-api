@@ -30,7 +30,7 @@ exports.fieldData = async(req, res) => {
 
 exports.apiCall = async(req, res) => {
     try{
-        const result = await callAPI(`${process.env.APPAPI_CDN_BASE}${req.originalUrl}`);
+        const result = await callAPI(getApiURL(req.originalUrl));
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
