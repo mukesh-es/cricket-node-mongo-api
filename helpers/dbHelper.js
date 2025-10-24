@@ -30,7 +30,7 @@ async function getMatchesList(inputs) {
             order = 'desc';
         }
         if(status && status > 0){
-            if(status == 1 && !orderStatus){
+            if(status == 1){
                 order = 'asc';
             }
             filters.status_id = Number(status);
@@ -40,9 +40,7 @@ async function getMatchesList(inputs) {
             filters.cid = Number(cid);
         }
         if(type && type != '') {
-            if(!orderStatus){
-                order = 'asc';
-            }
+            order = 'asc';
             filters.status_id = {$in: [3, 1]};
 		}
 
