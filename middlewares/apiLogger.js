@@ -22,7 +22,8 @@ const apiLogger = (req, res, next) => {
     const requestEnd = Date.now();
     logData.request_end_time = formatDateTime(requestEnd);
     logData.response_time = `${requestEnd-requestStart} ms`;
-    logData.response = JSON.stringify(body);
+    // logData.response = JSON.stringify(body);
+    logData.response = `${body.status}, ${body.message}`;
 
     console.log(`[${currentTime}], ${requestURL}, ${body.message} (${body.status})`);
     

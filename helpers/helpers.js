@@ -33,4 +33,8 @@ function getPagination(pageNumber=1, perPage=20) {
     } 
 }
 
-module.exports = { getApiName, getFieldName, getPagination };
+function getPages(totalCount, limit){
+    return Math.ceil(totalCount / limit)
+}
+
+module.exports = { getApiName, getFieldName, getPagination, getPages };

@@ -1,7 +1,7 @@
 const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList, getTeamsList } = require('../helpers/dbHelper');
+const { getFieldByAPI, getTeamMatchesList, getTeamsList } = require('../helpers/dbHelper');
 const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.info = async(req, res) => {
@@ -43,7 +43,7 @@ exports.fieldData = async(req, res) => {
         let result;
         if(resource === 'matches'){
             queryParams.team_id = teamId;
-            result = await getMatchesList(queryParams);
+            result = await getTeamMatchesList(queryParams);
         }else{
             let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;
             result = await getFieldByAPI(resourceModel, fieldName, filters);
