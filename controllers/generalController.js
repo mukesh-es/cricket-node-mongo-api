@@ -1,7 +1,7 @@
 const RankTourModel = require('../models/rankTourModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiName } = require('../helpers/helpers');
+const { getApiName, getApiURL } = require('../helpers/helpers');
 const { getConfigSync } = require('../helpers/configHelper');
 const callAPI = require('../helpers/apiHelper');
 

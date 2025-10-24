@@ -6,7 +6,7 @@ const ReelModel = require('../models/reelModel');
 const NewsModel = require('../models/newsModel');
 
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
-const { getPagination, getPages } = require('./helpers');
+const { getPagination, getPages, getValidCountry } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/consants');
 
@@ -155,8 +155,9 @@ async function getCompetitionsList(inputs) {
         if(season){
             filters.season = String(season);
         }
+
         if(country){
-            filters.country = country;
+            filters.country = new RegExp(`^${country}$`, 'i');
         }
         const pagination = getPagination(paged, per_page);
 
@@ -193,6 +194,7 @@ async function getReelsList(inputs) {
         filter_value = Number(filter_value);
 
         const countries = ['all'];
+        country = getValidCountry(country);
         if(country && country != ''){
             countries.push(country.toLowerCase());
         }
@@ -275,6 +277,7 @@ async function getNewsList(inputs) {
         category = category > 0 ? Number(category) : 0;
 
         const countries = ['all'];
+        country = getValidCountry(country);
         if(country && country != ''){
             countries.push(country.toLowerCase());
         }
