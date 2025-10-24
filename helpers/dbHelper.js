@@ -6,7 +6,7 @@ const ReelModel = require('../models/reelModel');
 const NewsModel = require('../models/newsModel');
 
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
-const { getPagination, getPages } = require('./helpers');
+const { getPagination, getPages, getValidCountry } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/consants');
 
@@ -26,9 +26,11 @@ async function getMatchesList(inputs) {
     try{
         let filters = {};
         let { status, cid, team_id, venue_id, date, type, order, paged, per_page } = inputs;
-        const orderStatus = order && order!= '';
+        if(!order || order == ''){
+            order = 'desc';
+        }
         if(status && status > 0){
-            if(status == 1 && !orderStatus){
+            if(status == 1){
                 order = 'asc';
             }
             filters.status_id = Number(status);
@@ -38,14 +40,9 @@ async function getMatchesList(inputs) {
             filters.cid = Number(cid);
         }
         if(type && type != '') {
-            if(!orderStatus){
-                order = 'asc';
-            }
+            order = 'asc';
             filters.status_id = {$in: [3, 1]};
 		}
-        if(!orderStatus){
-            order = 'asc';
-        }
 
         const sortingOrder = order == 'desc' ? -1 : 1;
 
@@ -155,8 +152,9 @@ async function getCompetitionsList(inputs) {
         if(season){
             filters.season = String(season);
         }
+
         if(country){
-            filters.country = country;
+            filters.country = new RegExp(`^${country}$`, 'i');
         }
         const pagination = getPagination(paged, per_page);
 
@@ -193,6 +191,7 @@ async function getReelsList(inputs) {
         filter_value = Number(filter_value);
 
         const countries = ['all'];
+        country = getValidCountry(country);
         if(country && country != ''){
             countries.push(country.toLowerCase());
         }
@@ -275,6 +274,7 @@ async function getNewsList(inputs) {
         category = category > 0 ? Number(category) : 0;
 
         const countries = ['all'];
+        country = getValidCountry(country);
         if(country && country != ''){
             countries.push(country.toLowerCase());
         }

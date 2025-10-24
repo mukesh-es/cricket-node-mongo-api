@@ -4,7 +4,7 @@ const InningModel = require('../models/inningModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getApiURL } = require('../helpers/helpers');
+const { getApiName, getFieldName, getApiURL, getValidCountry } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
 
 exports.fieldData = async(req, res) => {
@@ -41,7 +41,7 @@ exports.fieldData = async(req, res) => {
 exports.matches = async(req, res) => {
     try{
         const queryParams = req.query;
-        const {
+        let {
             highlight_live_matches, 
             highlight_compilation, 
             country
@@ -51,6 +51,7 @@ exports.matches = async(req, res) => {
         let result;
         
         // Highlight Matches
+        country = getValidCountry(country);
         if(highlight_live_matches && country){
             fieldName = `highlight_live_matches_${country.toLowerCase()}`;
             resourceModel = HighlightModel;

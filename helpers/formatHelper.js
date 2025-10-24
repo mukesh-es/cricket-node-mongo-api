@@ -34,7 +34,7 @@ function formatReelInfo(data){
         title: data.title,
         subtitle: data.subtitle,
         logo_url: data.logo_url,
-        timestamp: Number(data.timestamp),
+        timestamp: String(data.timestamp),
         updated: String(data.updated),
         scheduled: String(data.scheduled),
         orderby_time: String(data.orderby_time),
@@ -52,6 +52,17 @@ function formatReelInfo(data){
 }
 
 function formatNewsInfo(data){
+    let tags = [];
+    if (data.tags) {
+        const expTags = data.tags.split('#');
+        
+        for (let tag of expTags) {
+            tag = tag.trim().replace(/\s+/g, '');
+            if (tag) {
+                tags.push('#' + tag);
+            }
+        }
+    }
     return {
         news_id: String(data.news_id),
         title: data.title,
@@ -62,7 +73,7 @@ function formatNewsInfo(data){
         connected_to: String(data.connected_to),
         connected_id: String(data.connected_id),
         news_url: data.news_url,
-        tags: data.tags != '' ? data.tags : [],
+        tags: tags,
         credit: String(data.credit),
         created: String(data.created),
     }

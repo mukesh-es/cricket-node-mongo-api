@@ -4,7 +4,7 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getApiName, getFieldName, getValidCountry } = require('../helpers/helpers');
 
 
 exports.info = async(req, res) => {
@@ -52,9 +52,11 @@ exports.fieldData = async(req, res) => {
 
 exports.competitions = async(req, res) => {
     try{
-        const {highlight_compilation, country} = req.query;
+        let {highlight_compilation, country} = req.query;
         let fieldName;
         let result;
+
+        country = getValidCountry(country);
         if(highlight_compilation && country){
             fieldName = `hightlighted_series_${country.toLowerCase()}`;
         }

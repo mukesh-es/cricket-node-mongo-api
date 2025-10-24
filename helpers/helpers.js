@@ -37,4 +37,18 @@ function getApiURL(path){
     return `${process.env.APPAPI_CDN_BASE}${path}`;
 }
 
-module.exports = { getApiName, getFieldName, getPagination, getPages, getApiURL };
+function getValidCountry(country='in'){
+    if(country != 'bd' && country != 'pk'){
+        country = 'in';
+    }
+    return country;
+}
+
+module.exports = { 
+    getApiName, 
+    getFieldName, 
+    getPagination, 
+    getPages, 
+    getApiURL,
+    getValidCountry 
+};

@@ -6,7 +6,7 @@ const newsSchema = new mongoose.Schema({
     category: {type: String},
     connected_id: {type: Number, required: true, default: 0},
     connected_to: {type: Number, required: true},
-    country: {type: String, default: 0},
+    country: {type: String, default: ''},
     created: {type: Number, default: 0},
     credit: {type: String},
     media_type: {type: Number},
