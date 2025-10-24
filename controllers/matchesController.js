@@ -41,7 +41,7 @@ exports.fieldData = async(req, res) => {
 exports.matches = async(req, res) => {
     try{
         const queryParams = req.query;
-        const {
+        let {
             highlight_live_matches, 
             highlight_compilation, 
             country
