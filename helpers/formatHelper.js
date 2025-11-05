@@ -69,7 +69,7 @@ function formatNewsInfo(data){
         news_body: data.news_body,
         media_type: String(data.media_type),
         media_url: `${process.env.CLOUD_FRONT}news/${data.media_url}`,
-        redirect: data.redirect,
+        redirect: data.redirect??'',
         connected_to: String(data.connected_to),
         connected_id: String(data.connected_id),
         news_url: data.news_url,
