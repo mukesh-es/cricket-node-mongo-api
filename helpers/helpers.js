@@ -1,5 +1,5 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
-const { DEFAULT_PERPAGE_LIMITS } = require("../config/consants");
+const { DEFAULT_PERPAGE_LIMITS } = require("../config/constants");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];

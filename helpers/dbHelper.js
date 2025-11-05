@@ -8,7 +8,7 @@ const NewsModel = require('../models/newsModel');
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
 const { getPagination, getPages, getValidCountry } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
-const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/consants');
+const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/constants');
 
 
 async function getFieldByAPI(Model, apiName, filters={}) {
@@ -25,7 +25,18 @@ async function getFieldByAPI(Model, apiName, filters={}) {
 async function getMatchesList(inputs) {
     try{
         let filters = {};
-        let { status, cid, team_id, venue_id, date, type, order, paged, per_page, api_name } = inputs;
+        let { 
+            status, 
+            cid, 
+            team_id, 
+            venue_id, 
+            date, 
+            type, 
+            order, 
+            paged, 
+            per_page, 
+            api_name
+        } = inputs;
         if(!order || order == ''){
             order = 'desc';
         }
@@ -79,18 +90,65 @@ async function getMatchesList(inputs) {
         if(venue_id && venue_id > 0){
             filters.venue_id = Number(venue_id);
         }
-        const pagination = getPagination(paged, per_page, api_name);
 
-        // Total Items
-        const totalCount = await MatchModel.countDocuments(filters);
+        let items = [];
+        let totalItems = 0;
+        let limit = 0;
+        if(api_name === 'venues_matches'){
+            const pagination = getPagination(paged, per_page, 'competitions');
+            limit = pagination.limit;
+            // Total Items
+            const competitionIds = await MatchModel.distinct("cid", filters);
+            totalItems = competitionIds.length;
+            if(totalItems > 0){
+                const result = await CompetitionModel.find({cid: {$in: competitionIds}}, 'cid competitions_info').sort({datestart: -1}).skip(pagination.offset).limit(limit);
+                if(result){
+                    const allItems = await Promise.all(
+                        result.map(async (r) => {
+                            try {
+                                const compInfo = formatCompetitionInfo(JSON.parse(r.competitions_info || '{}'));
 
-        // Paginated Items
-        const result = await MatchModel.find(filters, 'match_info_for_list').sort({timestamp_start: sortingOrder}).skip(pagination.offset).limit(pagination.limit);
-        if(result){
-            const items = result.map(r => JSON.parse(r.match_info_for_list)).flat();
-            return itemsResponse(items, totalCount, pagination.limit);
+                                const matchFilters = { ...filters, cid: r.cid };
+                                const compMatches = await MatchModel.find(matchFilters, 'match_info_for_list')
+                                    .sort({ timestamp_start: sortingOrder }).lean();;
+
+                                const matches = compMatches
+                                                .map((cm) => {
+                                                    try {
+                                                        return JSON.parse(cm.match_info_for_list);
+                                                    } catch (parseErr) {
+                                                        console.warn(`Failed to parse match_info_for_list for match ID: ${cm.mid}`, parseErr);
+                                                        return null; // Skip bad entries
+                                                    }
+                                                })
+                                                .filter(Boolean);
+                                return matches.length > 0
+                                        ? [{ ...compInfo, matches }]
+                                        : [];
+                            } catch (err) {
+                                console.error('Error processing competition', r.cid, err);
+                                return [];
+                            }
+                        })
+                    );
+                    items = allItems.flat();
+                }
+            }
+        }else{
+            const pagination = getPagination(paged, per_page, api_name);
+            limit = pagination.limit;
+            // Total Items
+            totalItems = await MatchModel.countDocuments(filters);
+
+            // Paginated Items
+            if(totalItems > 0){
+                const result = await MatchModel.find(filters, 'match_info_for_list').sort({timestamp_start: sortingOrder}).skip(pagination.offset).limit(limit).lean();;
+                if(result){
+                    items = result.map(r => JSON.parse(r.match_info_for_list)).flat();
+                }
+            }
         }
-        return null;
+        return itemsResponse(items, String(totalItems), limit);
     }catch(err){
         return null;
     }
@@ -108,13 +166,13 @@ async function getTeamsList(inputs) {
         const pagination = getPagination(paged, per_page, api_name);
         
         // Total Items
-        const totalCount = await TeamModel.countDocuments(filters);
+        const totalItems = await TeamModel.countDocuments(filters);
 
         // Paginated Items
         const result = await TeamModel.find(filters, 'teams_info_for_list').skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.teams_info_for_list)).flat();
-            return itemsResponse(items, String(totalCount), pagination.limit);
+            return itemsResponse(items, String(totalItems), pagination.limit);
         }
         return null;
     }catch(err){
@@ -134,13 +192,13 @@ async function getPlayersList(inputs) {
         const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
-        const totalCount = await PlayerModel.countDocuments(filters);
+        const totalItems = await PlayerModel.countDocuments(filters);
 
         // Paginated Items
         const result = await PlayerModel.find(filters, 'players_list').skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => JSON.parse(r.players_list)).flat();
-            return itemsResponse(items, String(totalCount), pagination.limit);
+            return itemsResponse(items, String(totalItems), pagination.limit);
         }
         return null;
     }catch(err){
@@ -163,13 +221,13 @@ async function getCompetitionsList(inputs) {
         const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
-        const totalCount = await CompetitionModel.countDocuments(filters);
+        const totalItems = await CompetitionModel.countDocuments(filters);
 
         // Paginated Items
         const result = await CompetitionModel.find(filters, 'competitions_info').sort({datestart: 1}).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => formatCompetitionInfo(JSON.parse(r.competitions_info))).flat();
-            return itemsResponse(items, String(totalCount), pagination.limit);
+            return itemsResponse(items, String(totalItems), pagination.limit);
         }
         return null;
     }catch(err){
@@ -242,7 +300,7 @@ async function getReelsList(inputs) {
 
         const pagination = getPagination(paged, per_page, api_name);
         // Total Items
-        const totalCount = await ReelModel.countDocuments(filters);
+        const totalItems = await ReelModel.countDocuments(filters);
 
         // Paginated Items
         const result = await ReelModel.find(filters)
@@ -252,7 +310,7 @@ async function getReelsList(inputs) {
 
         if (result) {
             const items = result.map(r => formatReelInfo(r));
-            return itemsResponse(items, totalCount, pagination.limit);
+            return itemsResponse(items, totalItems, pagination.limit);
         } 
         return null;
 
@@ -292,7 +350,7 @@ async function getNewsList(inputs) {
         if(id && id > 0){
             filters.news_id = id;
         }
-        if(category){
+        if(category && category > 0){
             filters.category = category;
         }
         filters.country = { $in: countries};
@@ -300,16 +358,18 @@ async function getNewsList(inputs) {
         const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
-        const totalCount = await NewsModel.countDocuments(filters);
+        const totalItems = await NewsModel.countDocuments(filters);
 
         // Paginated Items
-        const result = await NewsModel.find(filters).sort({ created: -1 }).skip(pagination.offset).limit(pagination.limit);
-        if(result){
-            const items = result.map(r => formatNewsInfo(r));
-            const response = itemsResponse(items, totalCount, pagination.limit);
-            response.categories = NEWS_CATEGORIES;
-            response.news_app_cat = NEWS_APP_CATEGORIES;
-            return response;
+        if(totalItems > 0){
+            const result = await NewsModel.find(filters).sort({ created: -1 }).skip(pagination.offset).limit(pagination.limit);
+            if(result){
+                const items = result.map(r => formatNewsInfo(r));
+                const response = itemsResponse(items, totalItems, pagination.limit);
+                response.categories = NEWS_CATEGORIES;
+                response.news_app_cat = NEWS_APP_CATEGORIES;
+                return response;
+            }
         }
         return null;
     }catch(err){
@@ -317,11 +377,11 @@ async function getNewsList(inputs) {
     }
 }
 
-function itemsResponse(items, totalCount, limit){
+function itemsResponse(items, totalItems, limit){
     return {
         items,
-        total_items: totalCount,
-        total_pages: getPages(totalCount, limit)
+        total_items: totalItems,
+        total_pages: getPages(totalItems, limit)
     }
 }
 

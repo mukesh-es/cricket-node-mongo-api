@@ -17,9 +17,10 @@ exports.info = async(req, res) => {
 
 exports.fieldData = async(req, res) => {
     try{
+        const apiName = getApiName(req.originalUrl);
         const {venueId, resource} = req.params;
         const queryParams = req.query;
-        const apiName = getApiName(req.originalUrl);
+        queryParams.api_name = apiName;
         const fieldName = getFieldName(apiName);
         const filters = {
             venue_id: Number(venueId),

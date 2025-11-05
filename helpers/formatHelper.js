@@ -1,4 +1,4 @@
-const { MEDIA_TYPE_CODE, MEDIA_ENTITY_CODE } = require("../config/consants");
+const { MEDIA_TYPE_CODE, MEDIA_ENTITY_CODE } = require("../config/constants");
 const { getDateMonth } = require("../utils/dateUtils");
 
 function formatCompetitionInfo(data){

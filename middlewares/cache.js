@@ -1,4 +1,4 @@
-const { HTTP_CODE } = require('../config/consants');
+const { HTTP_CODE } = require('../config/constants');
 const { redisClient, redisEnabled } = require('../config/redis');
 const { getApiName } = require('../helpers/helpers');
 const { sendResponse } = require('../utils/responseHandler');
