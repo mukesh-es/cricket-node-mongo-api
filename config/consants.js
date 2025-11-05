@@ -30,6 +30,15 @@ const NEWS_APP_CATEGORIES = {
   2: 'Sports',
   3: 'Politics',
 };
+const DEFAULT_PERPAGE_LIMITS = {
+  default: 10,
+  matches: 10,
+  competitions: 10,
+  teams: 10,
+  players: 10,
+  seasons_competitions: 10, // Reels
+  seasons_news: 10,
+};
 
 module.exports = { 
   HTTP_CODE, 
@@ -37,4 +46,5 @@ module.exports = {
   MEDIA_ENTITY_CODE,
   NEWS_CATEGORIES,
   NEWS_APP_CATEGORIES,
+  DEFAULT_PERPAGE_LIMITS
 };

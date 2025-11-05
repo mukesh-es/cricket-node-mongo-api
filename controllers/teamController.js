@@ -19,6 +19,7 @@ exports.info = async(req, res) => {
 exports.teams = async(req, res) => {
     try{
         const queryParams = req.query;
+        queryParams.api_name = getApiName(req.originalUrl);
         const result = await getTeamsList(queryParams);
         requestSuccess({res, result});
     } catch(err){

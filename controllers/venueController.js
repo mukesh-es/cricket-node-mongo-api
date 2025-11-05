@@ -2,7 +2,7 @@ const VenueModel = require('../models/venueModel');
 const MatchModel = require('../models/matchesModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getPagination } = require('../helpers/helpers');
+const { getApiName, getFieldName } = require('../helpers/helpers');
 
 exports.info = async(req, res) => {
     try{

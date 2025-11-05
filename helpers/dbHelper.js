@@ -25,7 +25,7 @@ async function getFieldByAPI(Model, apiName, filters={}) {
 async function getMatchesList(inputs) {
     try{
         let filters = {};
-        let { status, cid, team_id, venue_id, date, type, order, paged, per_page } = inputs;
+        let { status, cid, team_id, venue_id, date, type, order, paged, per_page, api_name } = inputs;
         if(!order || order == ''){
             order = 'desc';
         }
@@ -33,7 +33,11 @@ async function getMatchesList(inputs) {
             if(status == 1){
                 order = 'asc';
             }
-            filters.status_id = Number(status);
+            if(status == 2){
+                filters.status_id = {$in: [2, 4]};
+            }else{
+                filters.status_id = Number(status);
+            }
         }
         
         if(cid && cid > 0){
@@ -75,7 +79,7 @@ async function getMatchesList(inputs) {
         if(venue_id && venue_id > 0){
             filters.venue_id = Number(venue_id);
         }
-        const pagination = getPagination(paged, per_page);
+        const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
         const totalCount = await MatchModel.countDocuments(filters);
@@ -95,13 +99,13 @@ async function getMatchesList(inputs) {
 async function getTeamsList(inputs) {
     try{
         let filters = {};
-        const {search, paged, per_page} = inputs;
+        const {search, paged, per_page, api_name} = inputs;
 
         if(search){
             filters.title = { $regex: search, $options: "i" }
         }
 
-        const pagination = getPagination(paged, per_page);
+        const pagination = getPagination(paged, per_page, api_name);
         
         // Total Items
         const totalCount = await TeamModel.countDocuments(filters);
@@ -121,13 +125,13 @@ async function getTeamsList(inputs) {
 async function getPlayersList(inputs) {
     try{
         let filters = {};
-        const {search, paged, per_page} = inputs;
+        const {search, paged, per_page, api_name} = inputs;
 
         if(search){
             filters.title = { $regex: search, $options: "i" } 
         }
 
-        const pagination = getPagination(paged, per_page);
+        const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
         const totalCount = await PlayerModel.countDocuments(filters);
@@ -147,7 +151,7 @@ async function getPlayersList(inputs) {
 async function getCompetitionsList(inputs) {
     try{
         let filters = {};
-        const {season, country, paged, per_page} = inputs;
+        const {season, country, paged, per_page, api_name} = inputs;
 
         if(season){
             filters.season = String(season);
@@ -156,7 +160,7 @@ async function getCompetitionsList(inputs) {
         if(country){
             filters.country = new RegExp(`^${country}$`, 'i');
         }
-        const pagination = getPagination(paged, per_page);
+        const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
         const totalCount = await CompetitionModel.countDocuments(filters);
@@ -184,7 +188,8 @@ async function getReelsList(inputs) {
             country,
             latest_version,
             paged,
-            per_page
+            per_page,
+            api_name
         } = inputs;
 
         filter_type = Number(filter_type);
@@ -235,7 +240,7 @@ async function getReelsList(inputs) {
             filters.news_cat = Number(news_cat);
         }
 
-        const pagination = getPagination(paged, per_page || 60);
+        const pagination = getPagination(paged, per_page, api_name);
         // Total Items
         const totalCount = await ReelModel.countDocuments(filters);
 
@@ -267,7 +272,8 @@ async function getNewsList(inputs) {
             category,
             news_cat,
             per_page, 
-            paged
+            paged,
+            api_name
         } = inputs;
         
         id = id > 0 ? Number(id) : 0;
@@ -291,7 +297,7 @@ async function getNewsList(inputs) {
         }
         filters.country = { $in: countries};
        
-        const pagination = getPagination(paged, per_page);
+        const pagination = getPagination(paged, per_page, api_name);
 
         // Total Items
         const totalCount = await NewsModel.countDocuments(filters);

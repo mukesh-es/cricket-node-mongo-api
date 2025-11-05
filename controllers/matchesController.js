@@ -41,6 +41,7 @@ exports.fieldData = async(req, res) => {
 exports.matches = async(req, res) => {
     try{
         const queryParams = req.query;
+        queryParams.api_name = getApiName(req.originalUrl);
         let {
             highlight_live_matches, 
             highlight_compilation, 
