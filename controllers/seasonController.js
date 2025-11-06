@@ -9,8 +9,10 @@ const { getFieldByAPI, getCompetitionsList, getReelsList, getNewsList } = requir
 
 exports.fieldData = async(req, res) => {
     try{
+        const apiName = getApiName(req.originalUrl);
         const {season, resource} = req.params;
         const queryParams = req.query;
+        queryParams.api_name = apiName;
 
         if(season){
             queryParams.season = season;
@@ -18,7 +20,6 @@ exports.fieldData = async(req, res) => {
         
         let result;
 
-        const apiName = getApiName(req.originalUrl);
         
         if(apiName === 'season'){
             result = await getFieldByAPI(RankTourModel, 'seasons_list');

@@ -20,6 +20,7 @@ exports.fieldData = async(req, res) => {
 exports.players = async(req, res) => {
     try{
         const queryParams = req.query;
+        queryParams.api_name = getApiName(req.originalUrl);
         const result = await getPlayersList(queryParams);
         requestSuccess({res, result});
     } catch(err){

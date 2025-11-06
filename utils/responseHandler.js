@@ -1,4 +1,4 @@
-const { HTTP_CODE } = require("../config/consants");
+const { HTTP_CODE } = require("../config/constants");
 const { getConfigSync } = require("../helpers/configHelper");
 
 const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CODE.SUCCESS}) => {

@@ -3,7 +3,7 @@ const { default: mongoose } = require("mongoose");
 const newsSchema = new mongoose.Schema({
     news_id: {type: Number, required: true},
     title: {type: String},
-    category: {type: String},
+    category: {type: Number},
     connected_id: {type: Number, required: true, default: 0},
     connected_to: {type: Number, required: true},
     country: {type: String, default: ''},
