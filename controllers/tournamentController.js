@@ -2,12 +2,15 @@ const RankTourModel = require('../models/rankTourModel');
 const TourStatModel = require('../models/tourStatModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getApiName, getFieldName, getApiURL } = require('../helpers/helpers');
+const callAPI = require('../helpers/apiHelper');
 
 exports.fieldData = async(req, res) => {
     try{
         const {tournamentId, resource} = req.params;
-        const apiName = getApiName(req.originalUrl);
+        const { team_id } = req.query;
+        const requestOriginalURL = req.originalUrl;
+        const apiName = getApiName(requestOriginalURL);
         const fieldName = getFieldName(apiName);
         const filters = {
             tournament_id: Number(tournamentId),
@@ -32,12 +35,18 @@ exports.fieldData = async(req, res) => {
 exports.stats = async(req, res) => {
     try{
         const {tournamentId, statType} = req.params;
+        const {team_id} = req.query;
         let fieldName = statType;
         if(!statType){
             fieldName = 'default';
         }
         const filters = {tournament_id: Number(tournamentId)};
-        const result = await getFieldByAPI(TourStatModel, fieldName, filters);
+        let result;
+        if(team_id){
+            result = await callAPI(getApiURL( req.originalUrl));
+        }else{
+            result = await getFieldByAPI(TourStatModel, fieldName, filters);
+        }
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});

@@ -36,6 +36,7 @@ const DEFAULT_PERPAGE_LIMITS = {
   competitions: 10,
   teams: 10,
   players: 10,
+  season_competitionlist: 1000, // Competitions
   seasons_competitions: 10, // Reels
   seasons_news: 10,
 };
