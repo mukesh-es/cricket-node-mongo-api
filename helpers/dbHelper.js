@@ -30,7 +30,8 @@ async function getMatchesList(inputs) {
             cid, 
             team_id, 
             venue_id, 
-            date, 
+            date,
+            format,
             type, 
             order, 
             paged, 
@@ -53,6 +54,9 @@ async function getMatchesList(inputs) {
         
         if(cid && cid > 0){
             filters.cid = Number(cid);
+        }
+        if(format && format > 0){
+            filters.format = Number(format);
         }
         if(type && type != '') {
             order = 'asc';
@@ -209,14 +213,14 @@ async function getPlayersList(inputs) {
 async function getCompetitionsList(inputs) {
     try{
         let filters = {};
-        const {season, country, paged, per_page, api_name} = inputs;
+        const {season, country, paged, per_page, api_name, total_items_type} = inputs;
 
         if(season){
             filters.season = String(season);
         }
 
         if(country){
-            filters.country = new RegExp(`^${country}$`, 'i');
+            filters.country = { $regex: country, $options: 'i' };
         }
         const pagination = getPagination(paged, per_page, api_name);
 
@@ -227,7 +231,8 @@ async function getCompetitionsList(inputs) {
         const result = await CompetitionModel.find(filters, 'competitions_info').sort({datestart: 1}).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result.map(r => formatCompetitionInfo(JSON.parse(r.competitions_info))).flat();
-            return itemsResponse(items, String(totalItems), pagination.limit);
+            const totalItemsCount = total_items_type == 'num' ? Number(totalItems) : String(totalItems);
+            return itemsResponse(items, totalItemsCount, pagination.limit);
         }
         return null;
     }catch(err){
