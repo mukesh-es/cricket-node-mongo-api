@@ -24,6 +24,9 @@ exports.fieldData = async(req, res) => {
         if(apiName === 'season'){
             result = await getFieldByAPI(RankTourModel, 'seasons_list');
         }else if(apiName === 'season_competitions' || apiName === 'season_competitionlist'){
+            if(apiName === 'season_competitionlist'){
+                queryParams.total_items_type = 'num';
+            }
             result = await getCompetitionsList(queryParams);
         }else{
             const isReel = resource == 'competitions';
