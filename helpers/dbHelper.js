@@ -219,7 +219,7 @@ async function getCompetitionsList(inputs) {
             filters.season = String(season);
         }
 
-        if(country){
+        if(country && api_name !== 'season_competitionlist'){
             filters.country = { $regex: country, $options: 'i' };
         }
         const pagination = getPagination(paged, per_page, api_name);
