@@ -27,7 +27,7 @@ const apiLogger = (req, res, next) => {
 
     console.log(`[${currentTime}], ${requestURL}, ${body.message} (${body.status})`);
     
-    saveToFile(filePath, logData);
+    // saveToFile(filePath, logData);
     originalJson(body);
   };
 
