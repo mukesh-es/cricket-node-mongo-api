@@ -69,7 +69,6 @@ exports.matches = async(req, res) => {
         }
         requestSuccess({res, result});
     } catch(err){
-        console.log('Called error');
         requestFailed({res, err});
     }
 }

@@ -68,20 +68,102 @@ async function getTokenPlan(){
   });
 }
 
-async function getTokenCompetitions(){
+async function getTokenFeatures(type) {
   const planId = await getTokenPlan();
-  if(!planId) return [];
+  if (!planId) return [];
 
-  const cacheKey = `token_competitions:${planId}`;
+  const cacheKey = `token_${type}:${planId}`;
+  
   return getOrSetCache(cacheKey, async () => {
-    
     const [result] = await mysqlDB.execute(
-        `SELECT value FROM es_cricket_plan_features WHERE type='competition' AND plan_id=?`, 
-        [planId]
+      `SELECT value FROM es_cricket_plan_features WHERE type=? AND plan_id=?`,
+      [type, planId]
     );
-    return result && result.length > 0 ? result.map(r => Number(r.value)) : [];
+
+    if (!result || result.length === 0) return [];
+
+    return result.map(r => {
+      if(r.value && r.value != ''){
+        if (type === 'competition') return Number(r.value);
+        if (type === 'season') return String(r.value);  
+        return r.value;
+      }
+    });
   });
 }
 
+const crypto = require('crypto');
 
-module.exports = { verifyToken, getTokenData, getTokenCompetitions, getTokenPlan };
+function getCacheKey(req, cacheKey = '') {
+  const baseKey = `mongo_${cacheKey || 'api'}`;
+
+  const query = req.query && Object.keys(req.query).length > 0
+    ? JSON.stringify(Object.keys(req.query).sort().reduce((obj, key) => {
+        obj[key] = req.query[key];
+        return obj;
+      }, {}))
+    : '';
+
+  const hash = crypto
+    .createHash('md5')
+    .update(`${req.originalUrl}-${query}`)
+    .digest('hex');
+
+  return `${baseKey}:${hash}`;
+}
+
+
+function getApiCacheTime(apiName, options = {}) {
+  const cacheMap = {
+    // 200 seconds
+    200: [
+      'competitions', 'competition_overview', 'competition_squads',
+      'competition_standings', 'competition_stats', 'competition_teams',
+      'competition_team_ranks', 'iccranks', 'players', 'player_profile',
+      'player_stats', 'round_matches', 'round_teams', 'teams',
+      'team_domestic_competitions', 'team_matches', 'team_players',
+      'team_profile', 'competition_cricket_tracker', 'tournaments',
+      'tournament_competitions', 'tournament_tournament_stats',
+      'tournament_tournament_playerstats'
+    ],
+
+    // 5 seconds
+    5: [
+      'match_info', 'match_innings_info', 'match_live', 'match_scorecard',
+      'matches', 'match_inning_commentary', 'match_inning_scorecard',
+      'match_squads', 'season_competitions', 'season_news'
+    ],
+
+    // 600 seconds
+    600: ['season_app_ads', 'seasons_all', 'seasons', 'match_squads_stats'],
+
+    // 60 seconds
+    60: [
+      'competition_matches', 'match_statistics', 'match_summary',
+      'match_wagons', 'competition_squads_match', 'matchcenter_info',
+      'team_team_player'
+    ],
+
+    // 120 seconds
+    120: [
+      'match_point', 'match_new_point', 'match_new_point2',
+      'match_advanced_stats', 'match_player_advanced_stats',
+      'player_advancestats', 'player_player_matches',
+      'player_player_vs_player_stats'
+    ]
+  };
+
+  if (apiName === 'matchmatch_picks' && !options.picked_team) {
+    return 1200;
+  }
+
+  for (const [time, apis] of Object.entries(cacheMap)) {
+    if (apis.includes(apiName)) {
+      return Number(time);
+    }
+  }
+
+  return 20;
+}
+
+module.exports = { verifyToken, getTokenData, getTokenFeatures, getTokenPlan, getApiCacheTime, getCacheKey };

@@ -9,7 +9,7 @@ const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUti
 const { getPagination, getPages, getValidCountry } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/constants');
-const { getTokenCompetitions } = require('./cacheHelper');
+const { getTokenFeatures } = require('./cacheHelper');
 const { getContextValue } = require('../middlewares/requestContext');
 
 
@@ -46,7 +46,7 @@ async function getMatchesList(inputs) {
             order = 'desc';
         }
         
-        const allowedCompetitions = await getTokenCompetitions();
+        const allowedCompetitions = await getTokenFeatures('competition');
         if (!allowedCompetitions || allowedCompetitions.length === 0) {
             throw new Error("No competition allowed.");
         }
@@ -232,23 +232,36 @@ async function getCompetitionsList(inputs) {
         const {season, country, paged, per_page, total_items_type} = inputs;
         const apiName = getContextValue('api_name');
 
+        // Allowed Seasons
+        if(season){
+            const allowedSeasons = await getTokenFeatures('season');
+            if (!allowedSeasons || allowedSeasons.length === 0) {
+                throw new Error("No season allowed.");
+            }
+            if (!allowedSeasons.includes(String(season))) {
+                throw new Error(`Season ${season} is not allowed.`);
+            }
+        }
+
         // Allowed Competitions
-        const allowedCompetitions = await getTokenCompetitions();
+        const allowedCompetitions = await getTokenFeatures('competition');
         if (!allowedCompetitions || allowedCompetitions.length === 0) {
             throw new Error("No competition allowed.");
         }
         filters.cid = {$in: allowedCompetitions};
 
-        
-        if(season){
-            filters.season = String(season);
+        if (season) {
+            filters.$or = [
+                { season: String(season) },
+                { season: Number(season) },
+                { season: {$regex: `^${season}$`, $options: 'i' }}
+            ];
         }
 
         if(country && apiName !== 'season_competitionlist'){
             filters.country = { $regex: country, $options: 'i' };
         }
         const pagination = getPagination(paged, per_page);
-
         // Total Items
         const totalItems = await CompetitionModel.countDocuments(filters);
 
@@ -261,7 +274,7 @@ async function getCompetitionsList(inputs) {
         }
         return null;
     }catch(err){
-        return null;
+        throw err;
     }
 }
 

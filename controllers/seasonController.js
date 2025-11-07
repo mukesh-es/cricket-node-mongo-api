@@ -1,11 +1,9 @@
-const ReelModel = require('../models/reelModel');
-const NewsModel = require('../models/newsModel');
 const RankTourModel = require('../models/rankTourModel');
-const MatchModel = require('../models/matchesModel');
-
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getCompetitionsList, getReelsList, getNewsList } = require('../helpers/dbHelper');
 const { getContextValue } = require('../middlewares/requestContext');
+const { getApiURL } = require('../helpers/helpers');
+const callAPI = require('../helpers/apiHelper');
 
 exports.fieldData = async(req, res) => {
     try{
@@ -19,7 +17,6 @@ exports.fieldData = async(req, res) => {
         
         let result;
 
-        
         if(apiName === 'season'){
             result = await getFieldByAPI(RankTourModel, 'seasons_list');
         }else if(apiName === 'season_competitions' || apiName === 'season_competitionlist'){
@@ -27,6 +24,9 @@ exports.fieldData = async(req, res) => {
                 queryParams.total_items_type = 'num';
             }
             result = await getCompetitionsList(queryParams);
+        }else if(apiName === 'seasons_ads'){
+            const apiURL = getApiURL(req.originalUrl);
+            result = await callAPI(apiURL);
         }else{
             const isReel = resource == 'competitions';
             const isNews = resource == 'news';
