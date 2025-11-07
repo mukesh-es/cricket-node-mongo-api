@@ -17,15 +17,16 @@ exports.fieldData = async(req, res) => {
         let result;
         let resourceModel;
         let filters = {match_id: Number(matchId)};
-        const apiURL = getApiURL(req.originalUrl);
         if(iid && resource === 'playerwagon'){
             if(pid == 'all'){
                 filters.iid = Number(iid);
                 resourceModel = InningModel;
             }else{
+                const apiURL = getApiURL(req.originalUrl);
                 result = await callAPI(apiURL);
             }
         }else if(resource === 'newpoint2'){
+            const apiURL = getApiURL(req.originalUrl, 'rest');
             result = await callAPI(apiURL);
         }else{
             resourceModel = MatchModel;

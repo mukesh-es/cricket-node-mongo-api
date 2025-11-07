@@ -40,8 +40,12 @@ function getPages(totalCount, limit){
     return Math.ceil(totalCount / limit)
 }
 
-function getApiURL(path){
-    return `${process.env.APPAPI_CDN_BASE}${path}`;
+function getApiURL(path, base='aacdn'){
+    const baseObj = {
+        aacdn: process.env.APPAPI_CDN_BASE,
+        rest: process.env.REST_APPAPI_BASE
+    }
+    return `${baseObj[base]}${path}`;
 }
 
 function getValidCountry(country='in'){
