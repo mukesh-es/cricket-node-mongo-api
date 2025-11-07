@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const generalController = require('../controllers/generalController');
-const cache = require('../middlewares/cache');
+const apiCache = require('../middlewares/apiCache');
 
-router.get('/', cache(), generalController.config);
-router.get('/changelogs', cache(), generalController.fieldData);
+router.get('/', apiCache(), generalController.config);
+router.get('/changelogs', apiCache(), generalController.fieldData);
 
 module.exports = router;

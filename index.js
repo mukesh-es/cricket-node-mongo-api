@@ -3,11 +3,14 @@ const { requestFailed } = require('./utils/responseHandler');
 const apiAuth = require('./middlewares/apiAuth');
 const apiLogger = require('./middlewares/apiLogger');
 const apiHit = require('./middlewares/apiHitCount');
+const apiCache = require('./middlewares/apiCache');
+
+const { connectRedis } = require('./config/redis');
+
 
 const express = require('express');
 const app = express();
 const connectMongoDB = require('./db/mongoDB');
-connectMongoDB();
 
 app.use(express.json());
 
@@ -17,10 +20,13 @@ const startServer = async () => {
       await connectMongoDB();
       console.log("MongoDB connected");
 
+      await connectRedis();
+
       // Middlewares
       app.use(apiAuth);
       app.use(apiLogger);
       app.use(apiHit);
+      app.use(apiCache());
       
       // Routes
       app.use('/matches', require('./routes/matchesRoute'));
