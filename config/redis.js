@@ -28,4 +28,8 @@ async function connectRedis() {
   }
 }
 
-module.exports = { connectRedis, redisClient, redisEnabled };
+function getRedisClient() {
+  return redisClient;
+}
+
+module.exports = { connectRedis, getRedisClient, redisEnabled };

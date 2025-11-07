@@ -1,5 +1,5 @@
 const { HTTP_CODE } = require('../config/constants');
-const { redisClient, redisEnabled } = require('../config/redis');
+const { getRedisClient, redisEnabled } = require('../config/redis');
 const { sendResponse } = require('../utils/responseHandler');
 const { getContextValue } = require('../middlewares/requestContext');
 const { getApiCacheTime, getCacheKey } = require('../helpers/cacheHelper');
@@ -9,6 +9,9 @@ const apiCache = ({cacheKey, ttl = 0}={}) => {
 
     return async(req, res, next) => {
         if(!redisEnabled) return next();
+
+        const redisClient = getRedisClient();
+        if (!redisClient) return next();
         
         const apiName = getContextValue('api_name');
         if(!cacheKey){
