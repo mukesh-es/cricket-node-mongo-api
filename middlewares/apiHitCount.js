@@ -1,5 +1,6 @@
 const ApiHit = require('../models/apiHitModel');
 const {formatDate, formatDateTime} = require('../utils/dateUtils');
+const { getContextValue } = require('./requestContext');
 
 const apiHitBuffer = {};
 const BATCH_SIZE = 10;
