@@ -1,12 +1,13 @@
 
-const { redisClient, redisEnabled } = require('../config/redis');
+const { getRedisClient, redisEnabled } = require('../config/redis');
 const { getConfigSync } = require("../helpers/configHelper");
 const { getContextValue } = require('../middlewares/requestContext');
 const mysqlDB = require('../db/mysqlDB');
 
 async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
   try {
-    if (!redisEnabled) {
+    const redisClient = getRedisClient();
+    if (!redisEnabled || !redisClient) {
       // Redis disabled → query directly
       return await fetcher();
     }
