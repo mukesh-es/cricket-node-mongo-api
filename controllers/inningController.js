@@ -1,13 +1,14 @@
 const InningModel = require('../models/inningModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getFieldName } = require('../helpers/helpers');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
         let {matchId, inningNumber} = req.params;
         const {order} = req.query;
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         if(!inningNumber || inningNumber <= 0){
             inningNumber = 1;

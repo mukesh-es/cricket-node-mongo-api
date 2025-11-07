@@ -1,6 +1,5 @@
 const ApiHit = require('../models/apiHitModel');
 const {formatDate, formatDateTime} = require('../utils/dateUtils');
-const { getApiName } = require('../helpers/helpers');
 
 const apiHitBuffer = {};
 const BATCH_SIZE = 10;
@@ -10,7 +9,7 @@ const apiHitCount = async (req, res, next) => {
     try{
         const endpoint = req.path;
         const {token} = req.query;
-        const apiName = getApiName(endpoint)
+        const apiName = getContextValue('api_name');
         const today = formatDate();
         const bufferKey = `${apiName}|${token}|${today}`;
 

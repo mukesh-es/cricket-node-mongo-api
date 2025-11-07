@@ -2,7 +2,8 @@ const VenueModel = require('../models/venueModel');
 const MatchModel = require('../models/matchesModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getFieldName } = require('../helpers/helpers');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.info = async(req, res) => {
     try{
@@ -17,10 +18,9 @@ exports.info = async(req, res) => {
 
 exports.fieldData = async(req, res) => {
     try{
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const {venueId, resource} = req.params;
         const queryParams = req.query;
-        queryParams.api_name = apiName;
         const fieldName = getFieldName(apiName);
         const filters = {
             venue_id: Number(venueId),

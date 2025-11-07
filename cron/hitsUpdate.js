@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const ApiHit = require('../models/apiHitModel');
 const {formatDate, getUnixTimestamp} = require('../utils/dateUtils');
 const { apiMap } = require('../config/apiMap');
-const { getTokenData } = require('../helpers/configHelper');
+const { getTokenData } = require('../helpers/cacheHelper');
 const { DAILY_MIDNIGHT } = require('./cronSchedule');
 
 

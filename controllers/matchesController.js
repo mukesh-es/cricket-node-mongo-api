@@ -4,14 +4,15 @@ const InningModel = require('../models/inningModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getApiURL, getValidCountry } = require('../helpers/helpers');
+const { getFieldName, getApiURL, getValidCountry } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
         const {matchId, resource} = req.params;
         const {iid, pid} = req.query;
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         let result;
         let resourceModel;
@@ -41,7 +42,6 @@ exports.fieldData = async(req, res) => {
 exports.matches = async(req, res) => {
     try{
         const queryParams = req.query;
-        queryParams.api_name = getApiName(req.originalUrl);
         let {
             highlight_live_matches, 
             highlight_compilation, 
@@ -68,6 +68,7 @@ exports.matches = async(req, res) => {
         }
         requestSuccess({res, result});
     } catch(err){
+        console.log('Called error');
         requestFailed({res, err});
     }
 }

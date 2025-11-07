@@ -4,7 +4,8 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getValidCountry } = require('../helpers/helpers');
+const { getFieldName, getValidCountry } = require('../helpers/helpers');
+const { getContextValue } = require('../middlewares/requestContext');
 
 
 exports.info = async(req, res) => {
@@ -23,7 +24,7 @@ exports.fieldData = async(req, res) => {
         const {competitionId, resource} = req.params;
         const queryParams = req.query;
         const {format} = queryParams;
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         const filters = {
             cid: Number(competitionId),

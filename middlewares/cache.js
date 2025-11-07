@@ -1,14 +1,14 @@
 const { HTTP_CODE } = require('../config/constants');
 const { redisClient, redisEnabled } = require('../config/redis');
-const { getApiName } = require('../helpers/helpers');
 const { sendResponse } = require('../utils/responseHandler');
+const { getContextValue } = require('../middlewares/requestContext');
 
 const cache = ({cacheKey, ttl = process.env.REDIS_DEFAULT_TTL}={}) => {
     return async(req, res, next) => {
         if(!redisEnabled) return next();
         
         if(!cacheKey){
-            cacheKey = getApiName(req.originalUrl);
+            cacheKey = getContextValue('api_name');
         }
 
         const key = `mongo_${cacheKey}:${req.originalUrl}`;
