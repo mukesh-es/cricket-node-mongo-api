@@ -2,15 +2,14 @@ const RankTourModel = require('../models/rankTourModel');
 const TourStatModel = require('../models/tourStatModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getApiURL } = require('../helpers/helpers');
+const { getFieldName, getApiURL } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
         const {tournamentId, resource} = req.params;
-        const { team_id } = req.query;
-        const requestOriginalURL = req.originalUrl;
-        const apiName = getApiName(requestOriginalURL);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         const filters = {
             tournament_id: Number(tournamentId),

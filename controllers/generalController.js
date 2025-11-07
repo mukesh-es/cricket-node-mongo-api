@@ -1,9 +1,10 @@
 const RankTourModel = require('../models/rankTourModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiName, getApiURL } = require('../helpers/helpers');
+const { getApiURL } = require('../helpers/helpers');
 const { getConfigSync } = require('../helpers/configHelper');
 const callAPI = require('../helpers/apiHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.config = async(req, res) => {
     try{
@@ -16,7 +17,7 @@ exports.config = async(req, res) => {
 
 exports.fieldData = async(req, res) => {
     try{
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         let resourceModel;
         if(apiName === 'changelogs'){
             resourceModel = RankTourModel;

@@ -2,12 +2,13 @@ const MatchModel = require('../models/matchesModel');
 const PlayerModel = require('../models/playerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getPlayersList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName } = require('../helpers/helpers');
+const { getFieldName } = require('../helpers/helpers');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
         const {playerId} = req.params;
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         const filters = {pid: Number(playerId)};
         const result = await getFieldByAPI(PlayerModel, fieldName, filters);
@@ -20,7 +21,6 @@ exports.fieldData = async(req, res) => {
 exports.players = async(req, res) => {
     try{
         const queryParams = req.query;
-        queryParams.api_name = getApiName(req.originalUrl);
         const result = await getPlayersList(queryParams);
         requestSuccess({res, result});
     } catch(err){

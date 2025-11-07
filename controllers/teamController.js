@@ -2,8 +2,9 @@ const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getTeamsList } = require('../helpers/dbHelper');
-const { getApiName, getFieldName, getApiURL } = require('../helpers/helpers');
+const { getFieldName, getApiURL } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.info = async(req, res) => {
     try{
@@ -19,7 +20,6 @@ exports.info = async(req, res) => {
 exports.teams = async(req, res) => {
     try{
         const queryParams = req.query;
-        queryParams.api_name = getApiName(req.originalUrl);
         const result = await getTeamsList(queryParams);
         requestSuccess({res, result});
     } catch(err){
@@ -32,7 +32,7 @@ exports.fieldData = async(req, res) => {
         const {teamId, resource} = req.params;
         const queryParams = req.query;
         const {format} = queryParams;
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         const filters = {
             tid: Number(teamId),

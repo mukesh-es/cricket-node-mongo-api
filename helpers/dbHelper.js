@@ -9,6 +9,8 @@ const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUti
 const { getPagination, getPages, getValidCountry } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/constants');
+const { getTokenCompetitions } = require('./cacheHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 
 async function getFieldByAPI(Model, apiName, filters={}) {
@@ -35,12 +37,28 @@ async function getMatchesList(inputs) {
             type, 
             order, 
             paged, 
-            per_page, 
-            api_name
+            per_page,
         } = inputs;
+
+        const apiName = getContextValue('api_name');
+
         if(!order || order == ''){
             order = 'desc';
         }
+        
+        const allowedCompetitions = await getTokenCompetitions();
+        if (!allowedCompetitions || allowedCompetitions.length === 0) {
+            throw new Error("No competition allowed.");
+        }
+        if(cid && cid > 0){
+            if (!allowedCompetitions.includes(Number(cid))) {
+                throw new Error("You don't have a subscription for this competition.");
+            }
+            filters.cid = Number(cid);
+        }else{
+            filters.cid = {$in: allowedCompetitions};
+        }
+
         if(status && status > 0){
             if(status == 1){
                 order = 'asc';
@@ -52,9 +70,6 @@ async function getMatchesList(inputs) {
             }
         }
         
-        if(cid && cid > 0){
-            filters.cid = Number(cid);
-        }
         if(format && format > 0){
             filters.format = Number(format);
         }
@@ -65,6 +80,7 @@ async function getMatchesList(inputs) {
 
         const sortingOrder = order == 'desc' ? -1 : 1;
 
+        
         if(date){
             const dateArray = date.split('_');
             if(dateArray.length > 1){
@@ -98,7 +114,7 @@ async function getMatchesList(inputs) {
         let items = [];
         let totalItems = 0;
         let limit = 0;
-        if(api_name === 'venues_matches'){
+        if(apiName === 'venues_matches'){
             const pagination = getPagination(paged, per_page, 'competitions');
             limit = pagination.limit;
             // Total Items
@@ -139,7 +155,7 @@ async function getMatchesList(inputs) {
                 }
             }
         }else{
-            const pagination = getPagination(paged, per_page, api_name);
+            const pagination = getPagination(paged, per_page);
             limit = pagination.limit;
             // Total Items
             totalItems = await MatchModel.countDocuments(filters);
@@ -154,20 +170,20 @@ async function getMatchesList(inputs) {
         }
         return itemsResponse(items, String(totalItems), limit);
     }catch(err){
-        return null;
+        throw err;
     }
 }
 
 async function getTeamsList(inputs) {
     try{
         let filters = {};
-        const {search, paged, per_page, api_name} = inputs;
+        const {search, paged, per_page} = inputs;
 
         if(search){
             filters.title = { $regex: search, $options: "i" }
         }
 
-        const pagination = getPagination(paged, per_page, api_name);
+        const pagination = getPagination(paged, per_page);
         
         // Total Items
         const totalItems = await TeamModel.countDocuments(filters);
@@ -187,13 +203,13 @@ async function getTeamsList(inputs) {
 async function getPlayersList(inputs) {
     try{
         let filters = {};
-        const {search, paged, per_page, api_name} = inputs;
+        const {search, paged, per_page} = inputs;
 
         if(search){
             filters.title = { $regex: search, $options: "i" } 
         }
 
-        const pagination = getPagination(paged, per_page, api_name);
+        const pagination = getPagination(paged, per_page);
 
         // Total Items
         const totalItems = await PlayerModel.countDocuments(filters);
@@ -213,16 +229,25 @@ async function getPlayersList(inputs) {
 async function getCompetitionsList(inputs) {
     try{
         let filters = {};
-        const {season, country, paged, per_page, api_name, total_items_type} = inputs;
+        const {season, country, paged, per_page, total_items_type} = inputs;
+        const apiName = getContextValue('api_name');
 
+        // Allowed Competitions
+        const allowedCompetitions = await getTokenCompetitions();
+        if (!allowedCompetitions || allowedCompetitions.length === 0) {
+            throw new Error("No competition allowed.");
+        }
+        filters.cid = {$in: allowedCompetitions};
+
+        
         if(season){
             filters.season = String(season);
         }
 
-        if(country && api_name !== 'season_competitionlist'){
+        if(country && apiName !== 'season_competitionlist'){
             filters.country = { $regex: country, $options: 'i' };
         }
-        const pagination = getPagination(paged, per_page, api_name);
+        const pagination = getPagination(paged, per_page);
 
         // Total Items
         const totalItems = await CompetitionModel.countDocuments(filters);
@@ -251,8 +276,7 @@ async function getReelsList(inputs) {
             country,
             latest_version,
             paged,
-            per_page,
-            api_name
+            per_page
         } = inputs;
 
         filter_type = Number(filter_type);
@@ -303,7 +327,7 @@ async function getReelsList(inputs) {
             filters.news_cat = Number(news_cat);
         }
 
-        const pagination = getPagination(paged, per_page, api_name);
+        const pagination = getPagination(paged, per_page);
         // Total Items
         const totalItems = await ReelModel.countDocuments(filters);
 
@@ -335,8 +359,7 @@ async function getNewsList(inputs) {
             category,
             news_cat,
             per_page, 
-            paged,
-            api_name
+            paged
         } = inputs;
         
         id = id > 0 ? Number(id) : 0;
@@ -360,7 +383,7 @@ async function getNewsList(inputs) {
         }
         filters.country = { $in: countries};
        
-        const pagination = getPagination(paged, per_page, api_name);
+        const pagination = getPagination(paged, per_page);
 
         // Total Items
         const totalItems = await NewsModel.countDocuments(filters);

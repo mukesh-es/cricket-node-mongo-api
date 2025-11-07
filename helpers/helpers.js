@@ -1,5 +1,6 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
 const { DEFAULT_PERPAGE_LIMITS } = require("../config/constants");
+const { getContextValue } = require("../middlewares/requestContext");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
@@ -23,9 +24,10 @@ function getFieldName(apiName){
     return apiFieldsKeys?.[apiName] || null;
 }
 
-function getPagination(pageNumber = 1, perPage = 20, api_name='default') {
+function getPagination(pageNumber = 1, perPage = 20) {
+    const apiName = getContextValue('api_name');
     pageNumber = Number(pageNumber) || 1;
-    const defaultLimit = DEFAULT_PERPAGE_LIMITS[api_name] || DEFAULT_PERPAGE_LIMITS.default;
+    const defaultLimit = DEFAULT_PERPAGE_LIMITS[apiName] || DEFAULT_PERPAGE_LIMITS.default;
     perPage = Math.min(perPage, defaultLimit);
 
     return {

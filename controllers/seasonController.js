@@ -4,15 +4,14 @@ const RankTourModel = require('../models/rankTourModel');
 const MatchModel = require('../models/matchesModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getApiName } = require('../helpers/helpers');
 const { getFieldByAPI, getCompetitionsList, getReelsList, getNewsList } = require('../helpers/dbHelper');
+const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
-        const apiName = getApiName(req.originalUrl);
+        const apiName = getContextValue('api_name');
         const {season, resource} = req.params;
         const queryParams = req.query;
-        queryParams.api_name = apiName;
 
         if(season){
             queryParams.season = season;

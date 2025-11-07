@@ -18,10 +18,12 @@ const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CO
   return sendResponse(res, status, apiResponse);
 };
 
-const requestFailed = ({res, message = "Something went wrong", status = HTTP_CODE.FAILED, err}) => {
+const requestFailed = ({ res, message = "Something went wrong", status = HTTP_CODE.FAILED, err }) => {
+  const errorMessage = err?.message || message;
   const apiResponse = generateMetadata({
     status: "error",
-    message: `${message}${err ? ` : ${err}` : ''}`,
+    response: [],
+    message: errorMessage,
   });
   return sendResponse(res, status, apiResponse);
 };
@@ -41,6 +43,7 @@ const generateMetadata = (content = {}) => {
         .toString(16)
         .substring(1);
     metaData.etag = Array(8).fill(0).map(hex).join("");
+    metaData.api_version = process.env.API_VERSION;
   }
 
   const now = new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -48,7 +51,7 @@ const generateMetadata = (content = {}) => {
   if (!metaData.datetime) metaData.datetime = now;
   
   const apiConfig = getConfigSync();
-  if (metaData && apiConfig.api_version) {
+  if (metaData && apiConfig && apiConfig.api_version) {
       metaData.api_version = apiConfig.api_version;
   }
 
