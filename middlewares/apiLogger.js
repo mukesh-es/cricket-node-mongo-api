@@ -7,7 +7,7 @@ const apiLogger = (req, res, next) => {
   // Override res.json to print response
   const originalJson = res.json.bind(res);
   res.json = (body) => {
-    console.log(`[${currentTime}], ${requestURL}, ${body.message} (${body.status})`);
+    console.log(`[${currentTime}], ${requestURL}, ${body.message??''} (${body.status??''})`);
     originalJson(body);
   };
   next();
