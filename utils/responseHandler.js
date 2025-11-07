@@ -59,4 +59,4 @@ const generateMetadata = (content = {}) => {
 };
 
 
-module.exports = { requestSuccess, requestFailed };
+module.exports = { requestSuccess, requestFailed, sendResponse };
