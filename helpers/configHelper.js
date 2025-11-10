@@ -1,20 +1,27 @@
+const mongoose = require('mongoose');
 const configModel = require('../models/configModel');
-const mysqlDB = require('../db/mysqlDB');
 
 let cachedConfig = null;
 
 // Load config once at startup
-const loadConfig = async () => {
+const loadConfig = async (retry = 0) => {
   try {
     cachedConfig = await configModel.findOne({});
   } catch (err) {
-    console.error("Failed to load config:", err);
+    if (retry < 3) {
+      await new Promise(r => setTimeout(r, 3000));
+      return loadConfig(retry + 1);
+    }
+    console.error("Failed to load config after retries:", err);
   }
 };
-loadConfig(); // call at startup
+
+mongoose.connection.once('open', () => {
+  loadConfig();
+});
 
 // Sync getter
-const getConfigSync = () => cachedConfig;
+const getConfigSync = () => cachedConfig || { api_version: process.env.API_VERSION };
 
 // Optional: force reload later
 const reloadConfig = async () => {

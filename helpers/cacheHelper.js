@@ -23,7 +23,9 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
 
     // 3️⃣ Save to cache for ttlSeconds (10 min)
     if (data !== undefined && data !== null) {
-      await redisClient.setEx(cacheKey, ttlSeconds, JSON.stringify(data));
+      if (data && typeof data === 'object') {
+        await redisClient.setEx(cacheKey, ttlSeconds, JSON.stringify(data));
+      }
     }
 
     return data;
