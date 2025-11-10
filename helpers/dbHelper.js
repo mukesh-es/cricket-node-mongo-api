@@ -303,7 +303,13 @@ async function getReelsList(inputs) {
 
         const postTypeCode = 9;
 
-        const filters = {};
+        const filters = {
+            country: { $in: countries },
+            $or: [
+                { scheduled: 0 },
+                { scheduled: { $gt: 0, $lte: currentTime } }
+            ]
+        };
 
         if (filter_type && filter_type > 0 && filter_value) {
             if(filter_type === 1){
@@ -311,7 +317,7 @@ async function getReelsList(inputs) {
                 const compMatchesIds = matchesResult.map(m => Number(m.match_id));
                 compMatchesIds.push(filter_value);
 
-                filters.connectfrom = {$in: [1, 3] };
+                filters.connectfrom = {$in: [1, 3]};
                 filters.connectId = {$in: compMatchesIds};
             }else{
                 filters.connectfrom = filter_type;
@@ -319,17 +325,11 @@ async function getReelsList(inputs) {
             }
         }
 
-        if(type != 'all' ){
-		    filters.connectfrom = { $ne: postTypeCode };
-		}
-
-        filters.$or = [
-            { scheduled: { $gt: 0, $lte: currentTime } },
-            { scheduled: 0 }
-        ];
-
-        // country IN ('all')
-        filters.country = { $in: countries };
+        if (type != 'all') {
+            filters.$and = [
+                { connectfrom: { $ne: postTypeCode } }
+            ];
+        }
 
         // media_platform <= 0 if latest_version
         if (latest_version) {
@@ -343,6 +343,8 @@ async function getReelsList(inputs) {
         const pagination = getPagination(paged, per_page);
         // Total Items
         const totalItems = await ReelModel.countDocuments(filters);
+
+        console.log('filters: ', filters);
 
         // Paginated Items
         const result = await ReelModel.find(filters)
@@ -371,9 +373,15 @@ async function getNewsList(inputs) {
             country, 
             category,
             news_cat,
-            per_page, 
-            paged
+            per_page,
+            paged,
+            filter_type,
+            filter_value,
         } = inputs;
+
+        
+        filter_type = Number(filter_type);
+        filter_value = Number(filter_value);
         
         id = id > 0 ? Number(id) : 0;
         category = category > 0 ? Number(category) : 0;
@@ -395,6 +403,20 @@ async function getNewsList(inputs) {
             filters.category = category;
         }
         filters.country = { $in: countries};
+
+        if (filter_type && filter_type > 0 && filter_value) {
+            if(filter_type === 1){
+                const matchesResult = await MatchModel.find({ cid: filter_value }, 'match_id');
+                const compMatchesIds = matchesResult.map(m => Number(m.match_id));
+                compMatchesIds.push(filter_value);
+
+                filters.connected_to = {$in: [1, 3]};
+                filters.connected_id = {$in: compMatchesIds};
+            }else{
+                filters.connected_to = filter_type;
+                filters.connected_id = filter_value;
+            }
+        }
        
         const pagination = getPagination(paged, per_page);
 
