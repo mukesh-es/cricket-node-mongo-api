@@ -23,8 +23,16 @@ const apiCache = ({cacheKey, ttl = 0}={}) => {
 
         const key = getCacheKey(req, cacheKey);
         try{
+
             const cachedData = await redisClient.get(key);
-            if(cachedData) return sendResponse(res, HTTP_CODE.SUCCESS, cachedData);
+            if (cachedData) {
+            try {
+                const parsedData = JSON.parse(cachedData);
+                return sendResponse(res, HTTP_CODE.SUCCESS, parsedData);
+            } catch {
+                console.error("Invalid cached data");
+            }
+            }
 
             const originalJson = res.json.bind(res);
             res.json = async (body) => {
