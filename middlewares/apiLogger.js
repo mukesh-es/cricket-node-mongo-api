@@ -7,7 +7,19 @@ const apiLogger = (req, res, next) => {
   // Override res.json to print response
   const originalJson = res.json.bind(res);
   res.json = (body) => {
-    console.log(`[${currentTime}], ${requestURL}, ${body.message??'unknown'} (${body.status??'unknown'})`);
+    let responseMsg = body.message??'unknown';
+    let responseStatus = body.status??'unknown';
+    if (typeof body === 'string') {
+      try {
+        const parsedBody = JSON.parse(body);
+        responseMsg = parsedBody.message ?? 'unknown';
+        responseStatus = parsedBody.status ?? 'unknown';
+      } catch {
+        responseMsg = body.slice(0, 50);
+      }
+    }
+
+    console.log(`[${currentTime}], ${requestURL}, ${responseMsg} (${responseStatus})`);
     originalJson(body);
   };
   next();
