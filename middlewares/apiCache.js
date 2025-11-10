@@ -28,10 +28,11 @@ const apiCache = ({cacheKey, ttl = 0}={}) => {
 
             const originalJson = res.json.bind(res);
             res.json = async (body) => {
-                redisClient.setEx(key, parseInt(cacheTime), JSON.stringify(body))
-                .catch(err => console.error('Cache write error:', err));
-
-                originalJson(body);
+                if (body && typeof body === 'object') {
+                    redisClient.setEx(key, parseInt(cacheTime), JSON.stringify(body))
+                    .catch(err => console.error('Cache write error:', err));
+                }
+                return originalJson(body);
             };
             next();
         } catch(err){

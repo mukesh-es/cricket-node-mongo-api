@@ -10,6 +10,7 @@ const apiLogger = (req, res, next) => {
     let responseMsg = body.message??'unknown';
     let responseStatus = body.status??'unknown';
     if (typeof body === 'string') {
+      console.log('body: ', body.slice(0, 50));
       try {
         const parsedBody = JSON.parse(body);
         responseMsg = parsedBody.message ?? 'unknown';
