@@ -1,6 +1,11 @@
 const axios = require('axios');
 
-async function callAPI(url, method = 'GET', data = {}, headers = {}) {
+async function callAPI({
+  url, 
+  method = 'GET', 
+  data = {}, 
+  headers = {}} = {}
+) {
   try {
     const options = {
       method: method.toUpperCase(),
@@ -14,9 +19,9 @@ async function callAPI(url, method = 'GET', data = {}, headers = {}) {
     }
 
     const response = await axios(options);
-    const data = response.data;
-    if(data.response){
-      return data.response;
+    const responseData = response.data;
+    if(responseData.response){
+      return responseData.response;
     }
     return [];
   } catch (error) {
