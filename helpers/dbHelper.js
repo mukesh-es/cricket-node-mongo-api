@@ -344,8 +344,6 @@ async function getReelsList(inputs) {
         // Total Items
         const totalItems = await ReelModel.countDocuments(filters);
 
-        console.log('filters: ', filters);
-
         // Paginated Items
         const result = await ReelModel.find(filters)
         .sort({ orderby_time: -1 })
