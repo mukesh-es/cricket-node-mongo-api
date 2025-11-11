@@ -4,8 +4,9 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getFieldName, getValidCountry } = require('../helpers/helpers');
+const { getFieldName, getValidCountry, getApiURL } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
+const callAPI = require('../helpers/apiHelper');
 
 
 exports.info = async(req, res) => {
@@ -22,6 +23,7 @@ exports.info = async(req, res) => {
 exports.fieldData = async(req, res) => {
     try{
         const {competitionId, resource} = req.params;
+        console.log('resource: ', resource);
         const queryParams = req.query;
         const {format} = queryParams;
         const apiName = getContextValue('api_name');
@@ -29,7 +31,7 @@ exports.fieldData = async(req, res) => {
         const filters = {
             cid: Number(competitionId),
         };
-
+        console.log('apiName: ', apiName);
         let result;
         if(resource === 'stats'){
             // Default Stats
@@ -42,6 +44,10 @@ exports.fieldData = async(req, res) => {
                 filters.format = format;
             }
             result = await getFieldByAPI(CompStatModel, resource, filters);
+        }else if(resource === 'teams'){
+            const url = getApiURL(req.originalUrl);
+            console.log(url);
+            result = await callAPI({url});
         }else{
             result = await getFieldByAPI(CompetitionModel, fieldName, filters);
         }
