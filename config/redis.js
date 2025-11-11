@@ -5,7 +5,6 @@ let redisClient = null;
 
 async function connectRedis() {
   if (!redisEnabled) {
-    // console.log('Redis disabled via env');
     return null;
   }
 
