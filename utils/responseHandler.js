@@ -6,7 +6,7 @@ const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CO
     try {
       result = JSON.parse(result);
     } catch (err) {
-      result = [];
+      result = result;
     }
   }
 

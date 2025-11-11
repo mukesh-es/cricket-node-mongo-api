@@ -22,12 +22,12 @@ exports.fieldData = async(req, res) => {
                 filters.iid = Number(iid);
                 resourceModel = InningModel;
             }else{
-                const apiURL = getApiURL(req.originalUrl);
-                result = await callAPI(apiURL);
+                const url = getApiURL(req.originalUrl);
+                result = await callAPI({url});
             }
         }else if(resource === 'newpoint2'){
-            const apiURL = getApiURL(req.originalUrl, 'rest');
-            result = await callAPI(apiURL);
+            const url = getApiURL(req.originalUrl, 'rest');
+            result = await callAPI({url});
         }else{
             resourceModel = MatchModel;
         }
