@@ -47,7 +47,7 @@ function formatReelInfo(data){
         orderby_time: String(data.orderby_time),
         credit_title: data.credit_title,
         credit_url: data.credit_url,
-        thumbnail: `${reelCDN}thumbnail/${data.thumbnail}`,
+        thumbnail: `${data.thumbnail ? `${reelCDN}thumbnail/${data.thumbnail}` : ''}`,
         category: Number(data.category),
         country: data.country,
         media_platform: Number(data.media_platform),
