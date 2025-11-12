@@ -78,9 +78,6 @@ async function getMatchesList(inputs) {
             filters.status_id = {$in: [3, 1]};
 		}
 
-        const sortingOrder = order == 'desc' ? -1 : 1;
-
-        
         if(date){
             const dateArray = date.split('_');
             if(dateArray.length > 1){
@@ -111,6 +108,9 @@ async function getMatchesList(inputs) {
             filters.venue_id = Number(venue_id);
         }
 
+        const sortingOrder = order == 'desc' ? -1 : 1;
+        const sortBy = { timestamp_start: sortingOrder, match_id: 1 }
+
         let items = [];
         let totalItems = 0;
         let limit = 0;
@@ -130,8 +130,7 @@ async function getMatchesList(inputs) {
 
                                 const matchFilters = { ...filters, cid: r.cid };
                                 const compMatches = await MatchModel.find(matchFilters, 'match_info_for_list')
-                                    .sort({ timestamp_start: sortingOrder }).lean();;
-
+                                    .sort(sortBy).lean();
                                 const matches = compMatches
                                                 .map((cm) => {
                                                     try {
@@ -162,7 +161,7 @@ async function getMatchesList(inputs) {
 
             // Paginated Items
             if(totalItems > 0){
-                const result = await MatchModel.find(filters, 'match_info_for_list').sort({timestamp_start: sortingOrder}).skip(pagination.offset).limit(limit).lean();;
+                const result = await MatchModel.find(filters, 'match_info_for_list').sort(sortBy).skip(pagination.offset).limit(limit).lean();;
                 if(result){
                     items = result.map(r => JSON.parse(r.match_info_for_list)).flat();
                 }
