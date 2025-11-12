@@ -1,5 +1,11 @@
 const { MEDIA_TYPE_CODE, MEDIA_ENTITY_CODE } = require("../config/constants");
 const { getDateMonth } = require("../utils/dateUtils");
+const { getConfigSync } = require('../helpers/configHelper');
+
+function getReelCDN(){
+    const apiConfig = getConfigSync();
+    return apiConfig.reel_cdn_path??process.env.REEL_CDN_PATH;
+}
 
 function formatCompetitionInfo(data){
     return {
@@ -23,6 +29,7 @@ function formatCompetitionInfo(data){
 }
 
 function formatReelInfo(data){
+    const reelCDN = getReelCDN();
     const cType = Number(data.ctype);
     const connectFrom = Number(data.connectfrom);
     return {
@@ -40,18 +47,19 @@ function formatReelInfo(data){
         orderby_time: String(data.orderby_time),
         credit_title: data.credit_title,
         credit_url: data.credit_url,
-        thumbnail: `${process.env.CLOUD_FRONT}thumbnail/${data.thumbnail}`,
+        thumbnail: `${reelCDN}thumbnail/${data.thumbnail}`,
         category: Number(data.category),
         country: data.country,
         media_platform: Number(data.media_platform),
         news_cat: Number(data.news_cat),
         ctype_str: MEDIA_TYPE_CODE[cType]??'',
         connectfrom_str: MEDIA_ENTITY_CODE[connectFrom]??'',
-        cdnlink: `${process.env.CLOUD_FRONT}${data.clink}`,
+        cdnlink: `${reelCDN}${data.clink}`,
     }
 }
 
 function formatNewsInfo(data){
+    const reelCDN = getReelCDN();
     let tags = [];
     if (data.tags) {
         const expTags = data.tags.split('#');
@@ -68,7 +76,7 @@ function formatNewsInfo(data){
         title: data.title,
         news_body: data.news_body,
         media_type: String(data.media_type),
-        media_url: `${process.env.CLOUD_FRONT}news/${data.media_url}`,
+        media_url: `${reelCDN}news/${data.media_url}`,
         redirect: data.redirect??'',
         connected_to: String(data.connected_to),
         connected_id: String(data.connected_id),
