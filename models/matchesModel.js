@@ -19,6 +19,7 @@ const matchesSchema = new mongoose.Schema({
     teams_advance: {type: Object},
     match_playervsplayer_tavstb: {type: Object},
     match_playervsplayer_tbvsta: {type: Object},
+    match_number: {type: Number},
 });
 
 module.exports = mongoose.model('Match', matchesSchema, 'matches');
