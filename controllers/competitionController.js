@@ -42,9 +42,6 @@ exports.fieldData = async(req, res) => {
                 filters.format = format;
             }
             result = await getFieldByAPI(CompStatModel, resource, filters);
-        }else if(resource === 'teams'){
-            const url = getApiURL(req.originalUrl);
-            result = await callAPI({url});
         }else{
             result = await getFieldByAPI(CompetitionModel, fieldName, filters);
         }

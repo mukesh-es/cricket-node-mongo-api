@@ -109,7 +109,7 @@ async function getMatchesList(inputs) {
         }
 
         const sortingOrder = order == 'desc' ? -1 : 1;
-        const sortBy = { timestamp_start: sortingOrder, match_id: 1 }
+        const sortBy = { timestamp_start: sortingOrder, match_number: 1 }
 
         let items = [];
         let totalItems = 0;
