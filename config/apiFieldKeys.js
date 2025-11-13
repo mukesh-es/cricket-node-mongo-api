@@ -12,6 +12,7 @@ const apiFieldsKeys = {
     competitions_squads: "competitions_squads",
     competitions_standings: "competitions_standings",
     competitions_stats: "competitions_stats",
+    competitions_teams: "competitions_teams",
 
     // Teams
     teams_player: "teams_player",
