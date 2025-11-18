@@ -3,6 +3,8 @@ const { getRedisClient, redisEnabled } = require('../config/redis');
 const { getConfigSync } = require("../helpers/configHelper");
 const { getContextValue } = require('../middlewares/requestContext');
 const mysqlDB = require('../db/mysqlDB');
+const crypto = require('crypto');
+const { errorWithTime } = require('./helpers');
 
 async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
   try {
@@ -94,9 +96,6 @@ async function getTokenFeatures(type) {
     });
   });
 }
-
-const crypto = require('crypto');
-const { errorWithTime } = require('./helpers');
 
 function getCacheKey(req, cacheKey = '') {
   const baseKey = `mongo_${cacheKey || 'api'}`;
