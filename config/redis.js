@@ -1,4 +1,5 @@
 const redis = require('redis');
+const { errorWithTime } = require('../helpers/helpers');
 
 const redisEnabled = process.env.REDIS_ENABLED === 'true';
 let redisClient = null;
@@ -13,7 +14,7 @@ async function connectRedis() {
   try {
     redisClient = redis.createClient({ url: process.env.REDIS_URL });
 
-    redisClient.on('error', (err) => console.error('Redis error:', err));
+    redisClient.on('error', (err) => errorWithTime('Redis error:', err));
     redisClient.on('connect', () => console.log('Redis connected'));
     redisClient.on('reconnecting', () => console.log('Redis reconnecting...'));
 
@@ -21,7 +22,7 @@ async function connectRedis() {
 
     return redisClient;
   } catch (err) {
-    console.error('Redis connection failed:', err);
+    errorWithTime('Redis connection failed:', err);
     redisClient = null;
     return null;
   }

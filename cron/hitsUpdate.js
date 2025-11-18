@@ -11,6 +11,7 @@ const { DAILY_MIDNIGHT } = require('./cronSchedule');
 // Database Connection
 const connectMongoDB = require('../db/mongoDB');
 const mysqlDB = require('../db/mysqlDB');
+const { errorWithTime } = require('../helpers/helpers');
 connectMongoDB();
 
 async function updateHits(){
@@ -61,13 +62,13 @@ async function updateHits(){
               );
               console.log(`Subscription ${subId} updated:`, result);
             } catch (err) {
-              console.error(`Error updating subscription ${subId}:`, err.message);
+              errorWithTime(`Error updating subscription ${subId}:`, err.message);
             }
           }
         }
     }
   }catch (err) {
-    console.error('Error syncing hits:', err);
+    errorWithTime('Error syncing hits:', err);
   }
 }
 

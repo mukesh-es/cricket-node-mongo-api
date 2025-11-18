@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { errorWithTime } = require('../helpers/helpers');
 
 const connectMongoDB = async () => {
     try{
@@ -10,7 +11,7 @@ const connectMongoDB = async () => {
             socketTimeoutMS: 45000
         });
     }catch(err){
-        console.error('MongoDB connection failed', err)
+        errorWithTime('MongoDB connection failed', err)
     }
 }
 
