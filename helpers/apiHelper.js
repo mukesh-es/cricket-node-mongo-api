@@ -26,7 +26,7 @@ async function callAPI({
     }
     return [];
   } catch (error) {
-    errorWithTime('API call error:', error.message);
+    errorWithTime('API call error:', error.message, url);
     return null;
   }
 }
