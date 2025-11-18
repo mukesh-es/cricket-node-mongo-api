@@ -4,9 +4,8 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getFieldName, getValidCountry, getApiURL } = require('../helpers/helpers');
+const { getFieldName, getValidCountry } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
-const callAPI = require('../helpers/apiHelper');
 
 
 exports.info = async(req, res) => {
