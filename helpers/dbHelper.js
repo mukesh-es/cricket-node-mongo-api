@@ -6,7 +6,7 @@ const ReelModel = require('../models/reelModel');
 const NewsModel = require('../models/newsModel');
 
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
-const { getPagination, getPages, getValidCountry } = require('./helpers');
+const { getPagination, getPages, getValidCountry, errorWithTime } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/constants');
 const { getTokenFeatures } = require('./cacheHelper');
@@ -19,7 +19,7 @@ async function getFieldByAPI(Model, apiName, filters={}) {
         if(!doc) return null;
         return doc[apiName] || null;
     }catch(err){
-        console.error('Error: ', err.message);
+        errorWithTime('Error: ', err.message);
         return null;
     }
 }
@@ -145,7 +145,7 @@ async function getMatchesList(inputs) {
                                         ? [{ ...compInfo, matches }]
                                         : [];
                             } catch (err) {
-                                console.error('Error processing competition', r.cid, err);
+                                errorWithTime('Error processing competition', r.cid, err);
                                 return [];
                             }
                         })
@@ -368,7 +368,7 @@ async function getReelsList(inputs) {
         return null;
 
     } catch (err) {
-        console.error('Error in getReelsList:', err);
+        errorWithTime('Error in getReelsList:', err);
         return null;
     }
 }

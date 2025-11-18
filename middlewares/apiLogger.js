@@ -19,7 +19,7 @@ const apiLogger = (req, res, next) => {
       }
     }
 
-    console.log(`[${currentTime}], ${requestURL}, ${responseMsg} (${responseStatus})`);
+    // console.log(`[${currentTime}], ${requestURL}, ${responseMsg} (${responseStatus})`);
     originalJson(body);
   };
   next();

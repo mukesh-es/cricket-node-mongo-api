@@ -11,6 +11,7 @@ const { connectRedis } = require('./config/redis');
 const express = require('express');
 const app = express();
 const connectMongoDB = require('./db/mongoDB');
+const { errorWithTime } = require('./helpers/helpers');
 
 app.use(express.json());
 
@@ -40,7 +41,7 @@ const startServer = async () => {
       app.use('/', require('./routes/generalRoute'));
 
       app.use((err, req, res, next) => {
-          console.error(err.stack);
+          errorWithTime(err.stack);
           requestFailed({res, err: err.stack});
       });
 
@@ -49,7 +50,7 @@ const startServer = async () => {
       });
 
   } catch (err) {
-    console.error("Failed to start server:", err.message);
+    errorWithTime("Failed to start server:", err.message);
   }
 }
 

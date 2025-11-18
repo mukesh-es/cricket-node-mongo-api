@@ -1,6 +1,7 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
 const { DEFAULT_PERPAGE_LIMITS } = require("../config/constants");
 const { getContextValue } = require("../middlewares/requestContext");
+const { formatDateTime } = require("../utils/dateUtils");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
@@ -55,11 +56,23 @@ function getValidCountry(country='in'){
     return country;
 }
 
+function logWithTime(...messages) {
+  const timestamp = formatDateTime();
+  console.log(`[${timestamp}]`, ...messages);
+}
+
+function errorWithTime(...messages) {
+  const timestamp = formatDateTime();
+  console.error(`[${timestamp}]`, ...messages);
+}
+
 module.exports = { 
     getApiName, 
     getFieldName, 
     getPagination, 
     getPages, 
     getApiURL,
-    getValidCountry 
+    getValidCountry,
+    logWithTime,
+    errorWithTime 
 };

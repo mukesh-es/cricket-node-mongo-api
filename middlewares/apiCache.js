@@ -4,6 +4,7 @@ const { sendResponse } = require('../utils/responseHandler');
 const { getContextValue } = require('../middlewares/requestContext');
 const { getApiCacheTime, getCacheKey } = require('../helpers/cacheHelper');
 const { apiMap } = require('../config/apiMap');
+const { errorWithTime } = require('../helpers/helpers');
 
 const apiCache = ({cacheKey, ttl = 0}={}) => {
 
@@ -30,7 +31,7 @@ const apiCache = ({cacheKey, ttl = 0}={}) => {
                     const parsedData = JSON.parse(cachedData);
                     return sendResponse(res, HTTP_CODE.SUCCESS, parsedData);
                 } catch {
-                    console.error("Invalid cached data");
+                    errorWithTime("Invalid cached data");
                 }
             }
 
@@ -38,13 +39,13 @@ const apiCache = ({cacheKey, ttl = 0}={}) => {
             res.json = async (body) => {
                 if (body && typeof body === 'object') {
                     redisClient.setEx(key, parseInt(cacheTime), JSON.stringify(body))
-                    .catch(err => console.error('Cache write error:', err));
+                    .catch(err => errorWithTime('Cache write error:', err));
                 }
                 return originalJson(body);
             };
             next();
         } catch(err){
-            console.error('Redis cache error:', err);
+            errorWithTime('Redis cache error:', err);
             next();
         }
     }

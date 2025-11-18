@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const configModel = require('../models/configModel');
+const { errorWithTime } = require('./helpers');
 
 let cachedConfig = null;
 let lastLoadedTime = 0;
@@ -14,7 +15,7 @@ const loadConfig = async (retry = 0) => {
       await new Promise(r => setTimeout(r, 3000));
       return loadConfig(retry + 1);
     }
-    console.error("Failed to load config after retries:", err);
+    errorWithTime("Failed to load config after retries:", err);
   }
 };
 

@@ -30,7 +30,7 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
 
     return data;
   } catch (err) {
-    console.error(`Cache error for key ${cacheKey}:`, err.message);
+    errorWithTime(`Cache error for key ${cacheKey}:`, err.message);
     // Fail-safe: always fall back to DB
     return await fetcher();
   }
@@ -96,6 +96,7 @@ async function getTokenFeatures(type) {
 }
 
 const crypto = require('crypto');
+const { errorWithTime } = require('./helpers');
 
 function getCacheKey(req, cacheKey = '') {
   const baseKey = `mongo_${cacheKey || 'api'}`;

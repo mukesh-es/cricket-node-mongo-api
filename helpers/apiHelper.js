@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { errorWithTime } = require('./helpers');
 
 async function callAPI({
   url, 
@@ -25,7 +26,7 @@ async function callAPI({
     }
     return [];
   } catch (error) {
-    console.error('API call error:', error.message);
+    errorWithTime('API call error:', error.message);
     return null;
   }
 }

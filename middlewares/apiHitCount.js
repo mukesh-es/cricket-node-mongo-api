@@ -1,3 +1,4 @@
+const { errorWithTime } = require('../helpers/helpers');
 const ApiHit = require('../models/apiHitModel');
 const {formatDate, formatDateTime} = require('../utils/dateUtils');
 const { getContextValue } = require('./requestContext');
@@ -31,7 +32,7 @@ const apiHitCount = async (req, res, next) => {
             await flushToMongo(apiName, today, bufferItem);
         }
     } catch(err){
-        console.error('API tracking error: ', err.message);
+        errorWithTime('API tracking error: ', err.message);
     }
     next();
 }
@@ -68,7 +69,7 @@ async function flushToMongo(apiName, today, bufferItem) {
         bufferItem.count = 0;
         bufferItem.lastSaved = Date.now();
     } catch (err) {
-        console.error('❌ Mongo sync error:', err.message);
+        errorWithTime('❌ Mongo sync error:', err.message);
     }
 }
 
