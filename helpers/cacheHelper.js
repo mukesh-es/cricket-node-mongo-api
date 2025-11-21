@@ -46,43 +46,56 @@ function verifyToken(token){
     return false;
 }
 
-async function getTokenData(token) {
+// async function getTokenData(token) {
+//   const cacheKey = `token_data:${token}`;
+//   return getOrSetCache(cacheKey, async () => {
+//     const [rows] = await mysqlDB.execute(
+//       `SELECT app_id, subscription_id FROM es_user_apps WHERE token=? LIMIT 1`,
+//       [token]
+//     );
+//     return rows.length > 0 ? rows[0] : null;
+//   });
+// }
+async function getTokenData() {
+  const token = getContextValue('token');
   const cacheKey = `token_data:${token}`;
   return getOrSetCache(cacheKey, async () => {
     const [rows] = await mysqlDB.execute(
-      `SELECT app_id, subscription_id FROM es_user_apps WHERE token=? LIMIT 1`,
+      `SELECT 
+        apps.app_id,
+        apps.subscription_id,
+        sub.plan_id
+      FROM es_user_apps AS apps
+      LEFT JOIN es_user_subscriptions AS sub
+        ON apps.subscription_id = sub.subscription_id
+      WHERE apps.token = ?
+      LIMIT 1`,
       [token]
     );
+
     return rows.length > 0 ? rows[0] : null;
   });
 }
 
-async function getTokenPlan(){
-  const token  = getContextValue('token');
-  const cacheKey = `token_plan:${token}`;
-  return getOrSetCache(cacheKey, async () => {
-    const [result] = await mysqlDB.execute(`
-          SELECT sub.plan_id
-          FROM es_user_apps as apps
-          JOIN es_user_subscriptions as sub
-          ON apps.subscription_id=sub.subscription_id
-          WHERE token=?
-        `, [token]
-      );
-      return result && result.length > 0 ? result[0].plan_id : null;
-  });
-}
-
 async function getTokenFeatures(type) {
-  const planId = await getTokenPlan();
-  if (!planId) return [];
+  const token = getContextValue('token');
+  const tokenData = await getTokenData();
+  if (!tokenData) return [];
 
-  const cacheKey = `token_${type}:${planId}`;
+  const planId = tokenData.plan_id;
+  const subscriptionId = tokenData.subscription_id;
+
+  const cacheKey = `token_features_${type}:${token}`;
+  
   
   return getOrSetCache(cacheKey, async () => {
     const [result] = await mysqlDB.execute(
-      `SELECT value FROM es_cricket_plan_features WHERE type=? AND plan_id=?`,
-      [type, planId]
+      `
+        SELECT value FROM es_cricket_plan_features WHERE type=? AND plan_id=?
+        UNION
+        SELECT value FROM subscription_features WHERE subscription_id=? AND type=?
+      `,
+      [type, planId, subscriptionId, type]
     );
 
     if (!result || result.length === 0) return [];
@@ -169,4 +182,4 @@ function getApiCacheTime(apiName, options = {}) {
   return 20;
 }
 
-module.exports = { verifyToken, getTokenData, getTokenFeatures, getTokenPlan, getApiCacheTime, getCacheKey };
+module.exports = { verifyToken, getTokenData, getTokenFeatures, getApiCacheTime, getCacheKey };

@@ -17,12 +17,27 @@ exports.config = async(req, res) => {
 
 exports.fieldData = async(req, res) => {
     try{
+        const {id} = req.query;
         const apiName = getContextValue('api_name');
         let resourceModel;
-        if(apiName === 'changelogs'){
+        $isChangeLogs = apiName === 'changelogs';
+        if($isChangeLogs){
             resourceModel = RankTourModel;
         }
-        const result = await getFieldByAPI(resourceModel, apiName);
+        let result = await getFieldByAPI(resourceModel, apiName);
+        if($isChangeLogs){
+            let items = result?.items || [];
+            if (id) {
+                const filteredItem = items.find(item => Number(item.id) === Number(id)) || null;
+                if(result){
+                    result = {
+                        items: filteredItem,
+                        total_items: 1,
+                        total_pages: 1,
+                    }
+                }
+            }
+        }
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
