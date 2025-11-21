@@ -72,12 +72,16 @@ exports.competitions = async(req, res) => {
 exports.stats = async(req, res) => {
     try{
         const {competitionId, statType} = req.params;
+        const {paged} = req.query;
         let fieldName = statType;
         if(!statType){
             fieldName = 'default';
         }
         const filters = {cid: Number(competitionId)};
-        const result = await getFieldByAPI(CompStatModel, fieldName, filters);
+        let result = [];
+        if(paged <= 1){
+            result = await getFieldByAPI(CompStatModel, fieldName, filters);
+        }
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
