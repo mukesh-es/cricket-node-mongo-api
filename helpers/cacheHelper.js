@@ -78,13 +78,15 @@ async function getTokenData() {
 }
 
 async function getTokenFeatures(type) {
+  const token = getContextValue('token');
   const tokenData = await getTokenData();
   if (!tokenData) return [];
 
   const planId = tokenData.plan_id;
   const subscriptionId = tokenData.subscription_id;
 
-  const cacheKey = `token_${type}:${planId}`;
+  const cacheKey = `token_features_${type}:${token}`;
+  
   
   return getOrSetCache(cacheKey, async () => {
     const [result] = await mysqlDB.execute(
