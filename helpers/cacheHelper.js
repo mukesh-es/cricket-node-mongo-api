@@ -90,7 +90,7 @@ async function getTokenFeatures(type) {
     const [result] = await mysqlDB.execute(
       `
         SELECT value FROM es_cricket_plan_features WHERE type=? AND plan_id=?
-        UNION ALL
+        UNION
         SELECT value FROM subscription_features WHERE subscription_id=? AND type=?
       `,
       [type, planId, subscriptionId, type]
