@@ -47,7 +47,6 @@ exports.fieldData = async(req, res) => {
 exports.apiCall = async(req, res) => {
     try{
         const url = getApiURL(req.originalUrl);
-        console.log('url: ', url);
         const result = await callAPI({url, method: req.method});
         requestSuccess({res, result});
     } catch(err){
