@@ -126,7 +126,7 @@ async function getMatchesList(inputs) {
                     const allItems = await Promise.all(
                         result.map(async (r) => {
                             try {
-                                const compInfo = formatCompetitionInfo(JSON.parse(r.competitions_info || '{}'));
+                                const compInfo = formatCompetitionInfo(r);
 
                                 const matchFilters = { ...filters, cid: r.cid };
                                 const compMatches = await MatchModel.find(matchFilters, 'match_info_for_list')
@@ -265,9 +265,16 @@ async function getCompetitionsList(inputs) {
         const totalItems = await CompetitionModel.countDocuments(filters);
 
         // Paginated Items
-        const result = await CompetitionModel.find(filters, 'competitions_info').sort({datestart: 1}).skip(pagination.offset).limit(pagination.limit);
+        const result = await CompetitionModel.find(filters, 'competitions_info highlighted highlighted_url').sort({datestart: 1}).skip(pagination.offset).limit(pagination.limit);
         if(result){
-            const items = result.map(r => formatCompetitionInfo(JSON.parse(r.competitions_info))).flat();
+            const items = result
+            .map(r => formatCompetitionInfo(r, apiName))
+            .filter(item => 
+                item.title && 
+                item.title.trim() !== '' &&
+                item.cid && 
+                item.cid >= 1
+            );
             const totalItemsCount = total_items_type == 'num' ? Number(totalItems) : String(totalItems);
             return itemsResponse(items, totalItemsCount, pagination.limit);
         }
