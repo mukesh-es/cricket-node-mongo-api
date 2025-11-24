@@ -87,4 +87,32 @@ function formatNewsInfo(data){
     }
 }
 
-module.exports = {formatCompetitionInfo, formatReelInfo, formatNewsInfo};
+function formatChangeLogList(data, description=false){
+    let info = {
+        id: data.id,
+        title: data.title??'',
+        subtitle: data.subtitle??'',
+        img_url: data.img_url??'',
+        created: data.created ? dayMonthAbbrYear(data.created) : '',
+    }
+    if(description){
+        info.description = data.description??'';
+    }
+    return info;
+}
+
+const dayMonthAbbrYear = (timestamp) => {
+    if (!timestamp) return '';
+
+    const date = new Date(timestamp * 1000); 
+    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+
+    return date.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+};
+
+module.exports = {
+    formatCompetitionInfo, 
+    formatReelInfo, 
+    formatNewsInfo, 
+    formatChangeLogList
+};

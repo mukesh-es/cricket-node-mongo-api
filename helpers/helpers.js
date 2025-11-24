@@ -55,6 +55,9 @@ function getValidCountry(country='in'){
     }
     return country;
 }
+function isValidId(id){
+    return id !== undefined && id !== null && id !== '';
+}
 
 function logWithTime(...messages) {
   const timestamp = formatDateTime();
@@ -73,6 +76,7 @@ module.exports = {
     getPages, 
     getApiURL,
     getValidCountry,
+    isValidId,
     logWithTime,
-    errorWithTime 
+    errorWithTime
 };
