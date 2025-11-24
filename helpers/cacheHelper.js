@@ -33,7 +33,6 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
     return data;
   } catch (err) {
     errorWithTime(`Cache error for key ${cacheKey}:`, err.message);
-    // Fail-safe: always fall back to DB
     return await fetcher();
   }
 }
@@ -46,16 +45,6 @@ function verifyToken(token){
     return false;
 }
 
-// async function getTokenData(token) {
-//   const cacheKey = `token_data:${token}`;
-//   return getOrSetCache(cacheKey, async () => {
-//     const [rows] = await mysqlDB.execute(
-//       `SELECT app_id, subscription_id FROM es_user_apps WHERE token=? LIMIT 1`,
-//       [token]
-//     );
-//     return rows.length > 0 ? rows[0] : null;
-//   });
-// }
 async function getTokenData() {
   const token = getContextValue('token');
   const cacheKey = `token_data:${token}`;
