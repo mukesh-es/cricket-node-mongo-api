@@ -1,10 +1,11 @@
-const RankTourModel = require('../models/rankTourModel');
+const ChangeLogModel = require('../models/changeLogModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI } = require('../helpers/dbHelper');
-const { getApiURL } = require('../helpers/helpers');
+const { getFieldByAPI, itemsResponse } = require('../helpers/dbHelper');
+const { getApiURL, isValidId, getPagination } = require('../helpers/helpers');
 const { getConfigSync } = require('../helpers/configHelper');
 const callAPI = require('../helpers/apiHelper');
 const { getContextValue } = require('../middlewares/requestContext');
+const { formatChangeLogList } = require('../helpers/formatHelper');
 
 exports.config = async(req, res) => {
     try{
@@ -17,15 +18,31 @@ exports.config = async(req, res) => {
 
 exports.fieldData = async(req, res) => {
     try{
-        const {id} = req.query;
+        const {id, paged, per_page} = req.query;
         const apiName = getContextValue('api_name');
         let resourceModel;
-        $isChangeLogs = apiName === 'changelogs';
-        if($isChangeLogs){
-            resourceModel = RankTourModel;
+        let filters = {};
+        let result;
+        if(apiName === 'changelogs'){
+            const validId = isValidId(id);
+            let descriptionStatus = false;
+            if(validId){
+                filters.id = Number(id);
+                descriptionStatus = true;
+            }
+            const totalItems = await ChangeLogModel.countDocuments(filters);
+            const pagination = getPagination(paged, per_page);
+            logsResult = await ChangeLogModel.find(filters);
+            const items = logsResult.map(r => formatChangeLogList(r, descriptionStatus));
+            const totalItemsCount = Number(totalItems);
+            result = itemsResponse(items, totalItemsCount, pagination.limit);
+            if(validId && totalItemsCount > 0){
+                result.items = result.items[0];
+            }
         }
-        let result = await getFieldByAPI(resourceModel, apiName);
-        if($isChangeLogs){
+
+        if(resourceModel){
+            result = await getFieldByAPI(resourceModel, apiName);
             let items = result?.items || [];
             if (id) {
                 const filteredItem = items.find(item => Number(item.id) === Number(id)) || null;

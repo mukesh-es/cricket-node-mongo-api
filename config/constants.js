@@ -39,6 +39,7 @@ const DEFAULT_PERPAGE_LIMITS = {
   season_competitionlist: 1000, // Competitions
   seasons_competitions: 10, // Reels
   seasons_news: 10,
+  changelogs: 20
 };
 
 module.exports = { 

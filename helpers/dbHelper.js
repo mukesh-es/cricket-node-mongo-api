@@ -464,5 +464,6 @@ module.exports = {
     getPlayersList,
     getCompetitionsList,
     getReelsList,
-    getNewsList
+    getNewsList,
+    itemsResponse
 };
