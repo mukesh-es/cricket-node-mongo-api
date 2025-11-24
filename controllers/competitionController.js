@@ -3,7 +3,7 @@ const CompetitionModel = require('../models/competitionModel');
 const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
-const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
+const { getFieldByAPI, getMatchesList, getCompetitionsList } = require('../helpers/dbHelper');
 const { getFieldName, getValidCountry } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
@@ -52,7 +52,9 @@ exports.fieldData = async(req, res) => {
 
 exports.competitions = async(req, res) => {
     try{
-        let {highlight_compilation, country} = req.query;
+        const apiName = getContextValue('api_name');
+        const queryParams = req.query;
+        let {highlight_compilation, country} = queryParams;
         let fieldName;
         let result;
 
@@ -60,7 +62,9 @@ exports.competitions = async(req, res) => {
         if(highlight_compilation && country){
             fieldName = `hightlighted_series_${country.toLowerCase()}`;
         }
-        if(fieldName){
+        if(apiName === 'competitions'){
+            result = await getCompetitionsList(queryParams);
+        }else if(fieldName){
             result = await getFieldByAPI(HighlightModel, fieldName);
         }
         requestSuccess({res, result});

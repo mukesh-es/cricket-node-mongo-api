@@ -7,18 +7,18 @@ function getReelCDN(){
     return apiConfig.reel_cdn_path??process.env.REEL_CDN_PATH;
 }
 
-function formatCompetitionInfo(data){
-    return {
+function formatCompetitionInfo(row, apiName=''){
+    const isSeasonCompetitions = apiName === 'season_competitionlist';
+    row = JSON.parse(JSON.stringify(row));
+    const data = JSON.parse(row.competitions_info || '{}');
+    let info = {
         cid: data.cid,
         title: data.title??'',
         abbr: data.abbr??'',
-        type: data.type??'',
         category: data.category??'',
-        match_format: data.game_format??'',
         status: data.status??'',
         season: data.season??'',
         datestart: data.datestart??'',
-        month: data.datestart ? getDateMonth(data.datestart) : '',
         dateend: data.dateend??'',
         country: data.country??'',
         logo_url: data.logo_url??'',
@@ -26,6 +26,22 @@ function formatCompetitionInfo(data){
         total_rounds: String(data.total_rounds??0),
         total_teams: String(data.total_teams??0)
     }
+
+    if(isSeasonCompetitions){
+        info.type = data.type??'';
+        info.match_format = data.game_format??'';
+        info.month = data.datestart ? getDateMonth(data.datestart) : '';
+
+        if(Number(row.highlighted) === 1){
+            info.highlighted = row.highlighted;
+        }
+        if (row.highlighted_url && row.highlighted_url != '0') {
+            info.highlighted_url = row.highlighted_url;
+        }
+    }else{
+        info.game_format = data.game_format??'';
+    }
+    return info;
 }
 
 function formatReelInfo(data){
