@@ -24,7 +24,26 @@ const startServer = async () => {
       await connectRedis();
 
       // Middlewares
-      app.use(apiAuth);
+      app.use((req, res, next) => {
+        // Skip apiAuth for all POST requests
+        if (req.method === "POST") {
+          return next();
+        }
+
+        // Skip apiAuth for GET /
+        const skipAuthRoutes = [
+          "/",    // generalRoute → router.get('/')
+          "",     // safety fallback
+        ];
+
+        if (skipAuthRoutes.includes(req.path)) {
+          return next();
+        }
+
+        // Apply apiAuth for all other GET routes
+        apiAuth(req, res, next);
+      });
+
       app.use(apiLogger);
       app.use(apiHit);
       app.use(apiCache());
