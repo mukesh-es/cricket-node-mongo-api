@@ -8,7 +8,7 @@ const NewsModel = require('../models/newsModel');
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
 const { getPagination, getPages, getValidCountry, errorWithTime } = require('./helpers');
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
-const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES } = require('../config/constants');
+const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES, COMPETITION_STATUS } = require('../config/constants');
 const { getTokenFeatures } = require('./cacheHelper');
 const { getContextValue } = require('../middlewares/requestContext');
 
@@ -228,7 +228,7 @@ async function getPlayersList(inputs) {
 async function getCompetitionsList(inputs) {
     try{
         let filters = {};
-        const {season, country, paged, per_page, total_items_type} = inputs;
+        const {season, country, paged, per_page, total_items_type, status} = inputs;
         const apiName = getContextValue('api_name');
 
         // Allowed Seasons
@@ -260,12 +260,18 @@ async function getCompetitionsList(inputs) {
         if(country && apiName !== 'season_competitionlist'){
             filters.country = { $regex: country, $options: 'i' };
         }
+
+        const sortBy = { datestart: 1 }
+        if(status && COMPETITION_STATUS[status]){
+            filters.status = Number(COMPETITION_STATUS[status]);
+            sortBy.datestart = -1;
+        }
         const pagination = getPagination(paged, per_page);
         // Total Items
         const totalItems = await CompetitionModel.countDocuments(filters);
 
         // Paginated Items
-        const result = await CompetitionModel.find(filters, 'competitions_info highlighted highlighted_url').sort({datestart: -1}).skip(pagination.offset).limit(pagination.limit);
+        const result = await CompetitionModel.find(filters, 'competitions_info highlighted highlighted_url').sort(sortBy).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result
             .map(r => formatCompetitionInfo(r, apiName))

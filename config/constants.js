@@ -30,6 +30,13 @@ const NEWS_APP_CATEGORIES = {
   2: 'Sports',
   3: 'Politics',
 };
+
+const COMPETITION_STATUS = {
+  upcoming: 1,
+  live: 3,
+  completed: 2,
+};
+
 const DEFAULT_PERPAGE_LIMITS = {
   default: 10,
   matches: 10,
@@ -48,5 +55,6 @@ module.exports = {
   MEDIA_ENTITY_CODE,
   NEWS_CATEGORIES,
   NEWS_APP_CATEGORIES,
-  DEFAULT_PERPAGE_LIMITS
+  DEFAULT_PERPAGE_LIMITS,
+  COMPETITION_STATUS
 };
