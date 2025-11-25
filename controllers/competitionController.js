@@ -61,11 +61,9 @@ exports.competitions = async(req, res) => {
         country = getValidCountry(country);
         if(highlight_compilation && country){
             fieldName = `hightlighted_series_${country.toLowerCase()}`;
-        }
-        if(apiName === 'competitions'){
-            result = await getCompetitionsList(queryParams);
-        }else if(fieldName){
             result = await getFieldByAPI(HighlightModel, fieldName);
+        }else if(apiName === 'competitions'){
+            result = await getCompetitionsList(queryParams);
         }
         requestSuccess({res, result});
     } catch(err){
