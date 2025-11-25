@@ -265,7 +265,7 @@ async function getCompetitionsList(inputs) {
         const totalItems = await CompetitionModel.countDocuments(filters);
 
         // Paginated Items
-        const result = await CompetitionModel.find(filters, 'competitions_info highlighted highlighted_url').sort({datestart: 1}).skip(pagination.offset).limit(pagination.limit);
+        const result = await CompetitionModel.find(filters, 'competitions_info highlighted highlighted_url').sort({datestart: -1}).skip(pagination.offset).limit(pagination.limit);
         if(result){
             const items = result
             .map(r => formatCompetitionInfo(r, apiName))
