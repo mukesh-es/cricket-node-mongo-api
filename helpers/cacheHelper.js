@@ -59,9 +59,12 @@ function normalizeToken(token) {
     return apiConfig.token; // always return main token
 }
 
-async function getTokenData() {
-  const token = getContextValue('token');
-  const cacheKey = `token_data:${token}`;
+async function getTokenData(token='') {
+  const finalToken = token || getContextValue('token');
+  
+  if(!finalToken) return null;
+
+  const cacheKey = `token_data:${finalToken}`;
   return getOrSetCache(cacheKey, async () => {
     const [rows] = await mysqlDB.execute(
       `SELECT 
@@ -73,7 +76,7 @@ async function getTokenData() {
         ON apps.subscription_id = sub.subscription_id
       WHERE apps.token = ?
       LIMIT 1`,
-      [token]
+      [finalToken]
     );
 
     return rows.length > 0 ? rows[0] : null;

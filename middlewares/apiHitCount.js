@@ -51,6 +51,9 @@ setInterval(async () => {
 
 async function flushToMongo(apiName, today, bufferItem) {
     const { count, token } = bufferItem;
+
+    if(!token) return;
+
     if (count <= 0) return;
 
     try {

@@ -294,6 +294,7 @@ async function getReelsList(inputs) {
     try {
         const currentTime = toIST(getUnixTimestamp());
         let {
+            id,
             filter_type,
             filter_value,
             news_cat,
@@ -304,6 +305,7 @@ async function getReelsList(inputs) {
             per_page
         } = inputs;
 
+        id = id > 0 ? Number(id) : 0;
         filter_type = Number(filter_type);
         filter_value = Number(filter_value);
 
@@ -322,6 +324,10 @@ async function getReelsList(inputs) {
                 { scheduled: { $gt: 0, $lte: currentTime } }
             ]
         };
+
+        if(id && id > 0){
+            filters.reel_id = id;
+        }
 
         if (filter_type && filter_type > 0 && filter_value) {
             if(filter_type === 1){
@@ -374,6 +380,7 @@ async function getReelsList(inputs) {
         { $skip: pagination.offset },
         { $limit: pagination.limit }
         ]);
+
         if (result) {
             const items = result.map(r => formatReelInfo(r));
             return itemsResponse(items, totalItems, pagination.limit);
