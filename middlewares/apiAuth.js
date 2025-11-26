@@ -1,4 +1,4 @@
-const { verifyToken } = require('../helpers/cacheHelper');
+const { verifyToken, normalizeToken } = require('../helpers/cacheHelper');
 const { requestFailed, requestSuccess } = require('../utils/responseHandler');
 const { getApiName } = require('../helpers/helpers');
 const { runWithContext, getContextValue, setContextValue } = require('./requestContext');
@@ -14,14 +14,10 @@ const apiAuth = (req, res, next) => {
                     message: "Invalid token",
                 });
             }
-            if(req.query.api_name){
-                const apiName = getContextValue('api_name');
-                return requestSuccess({res, result: {
-                    api_name: apiName
-                }});
-            }
 
-            setContextValue('token', token);
+            const normalizedToken  = normalizeToken(token);
+
+            setContextValue('token', normalizedToken);
             setContextValue('api_name', getApiName(req.originalUrl));
 
             next();

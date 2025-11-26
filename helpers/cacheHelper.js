@@ -39,10 +39,24 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
 
 function verifyToken(token){
     const apiConfig = getConfigSync();
-    if(apiConfig && apiConfig.token === token){
-        return true;
-    }
-    return false;
+
+    // No config data
+    if (!apiConfig) return false;
+
+    // Token matched with token
+    const { token: mainToken, other_allowed_tokens = [] } = apiConfig;
+
+    return (
+        token === mainToken ||
+        other_allowed_tokens.includes(token)
+    );
+}
+
+function normalizeToken(token) {
+    const apiConfig = getConfigSync();
+    if (!apiConfig) return null;
+
+    return apiConfig.token; // always return main token
 }
 
 async function getTokenData() {
@@ -171,4 +185,11 @@ function getApiCacheTime(apiName, options = {}) {
   return 20;
 }
 
-module.exports = { verifyToken, getTokenData, getTokenFeatures, getApiCacheTime, getCacheKey };
+module.exports = { 
+  verifyToken, 
+  normalizeToken, 
+  getTokenData, 
+  getTokenFeatures, 
+  getApiCacheTime, 
+  getCacheKey 
+};
