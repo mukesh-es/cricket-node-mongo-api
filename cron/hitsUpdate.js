@@ -1,20 +1,14 @@
-require('dotenv').config();
-
-const cron = require('node-cron');
 const ApiHit = require('../models/apiHitModel');
 const {formatDate, getUnixTimestamp} = require('../utils/dateUtils');
 const { apiMap } = require('../config/apiMap');
 const { getTokenData } = require('../helpers/cacheHelper');
-const { DAILY_MIDNIGHT } = require('./cronSchedule');
-
 
 // Database Connection
 const connectMongoDB = require('../db/mongoDB');
 const mysqlDB = require('../db/mysqlDB');
 const { errorWithTime } = require('../helpers/helpers');
-connectMongoDB();
 
-async function updateHits(){
+module.exports = async function updateHits(){
   const today = formatDate();
   try{
     const hits = await ApiHit.find({date: today});
@@ -32,38 +26,41 @@ async function updateHits(){
         }
 
         const tokenData = await getTokenData(token);
-        const appId = tokenData.app_id??0;
-        const subscriptionId = tokenData.subscription_id??0;
-        if(subscriptionId > 0){
-          if (!subscriptionHits[subscriptionId]) {
-            subscriptionHits[subscriptionId] = 0;
-          }
-          subscriptionHits[subscriptionId] += hitCount;
-        }
-        
-        // mysqlDB.execute(
-          //   `INSERT INTO es_user_app_hits 
-          //   (api_name, app_id, total_hits, hit_time)
-          //   VALUES (?,?,?,?)`, 
-          //   [mappedAPI, appId, hitCount, currentTimestamp]
-          // );
-        }
-        if (Object.keys(subscriptionHits).length > 0) {
-          for (const [key, value] of Object.entries(subscriptionHits)) {
-            const subId = Number(key);
-            const hits = Number(value);
 
-            try {
-              const [result] = await mysqlDB.execute(
-                `UPDATE es_user_subscriptions
-                SET hits_used = hits_used + ?
-                WHERE subscription_id = ?`,
-                [hits, subId]
-              );
-              console.log(`Subscription ${subId} updated:`, result);
-            } catch (err) {
-              errorWithTime(`Error updating subscription ${subId}:`, err.message);
+        if(tokenData){
+          const appId = tokenData.app_id??0;
+          const subscriptionId = tokenData.subscription_id??0;
+          if(subscriptionId > 0){
+            if (!subscriptionHits[subscriptionId]) {
+              subscriptionHits[subscriptionId] = 0;
             }
+            subscriptionHits[subscriptionId] += hitCount;
+          }
+          
+            mysqlDB.execute(
+              `INSERT INTO es_user_app_hits 
+              (api_name, app_id, total_hits, hit_time)
+              VALUES (?,?,?,?)`, 
+              [mappedAPI, appId, hitCount, currentTimestamp]
+            );
+          }
+          if (Object.keys(subscriptionHits).length > 0) {
+            for (const [key, value] of Object.entries(subscriptionHits)) {
+              const subId = Number(key);
+              const hits = Number(value);
+  
+              try {
+                const [result] = await mysqlDB.execute(
+                  `UPDATE es_user_subscriptions
+                  SET hits_used = hits_used + ?
+                  WHERE subscription_id = ?`,
+                  [hits, subId]
+                );
+              } catch (err) {
+                errorWithTime(`Error updating subscription ${subId}:`, err.message);
+              }
+            }
+            console.log("Subscription hits updated");
           }
         }
     }
@@ -71,7 +68,3 @@ async function updateHits(){
     errorWithTime('Error syncing hits:', err);
   }
 }
-
-// cron.schedule(DAILY_MIDNIGHT, async () => {
-//   await updateHits();
-// });

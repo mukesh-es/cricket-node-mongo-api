@@ -30,18 +30,18 @@ const startServer = async () => {
           return next();
         }
 
-        // Skip apiAuth for GET /
-        const skipAuthRoutes = [
-          "/",    // generalRoute → router.get('/')
-          "",     // safety fallback
-        ];
+        // Skip for /cron and all children
+        if (req.path.startsWith('/cron')) {
+          return next();
+        }
 
-        if (skipAuthRoutes.includes(req.path)) {
+        // Skip apiAuth for GET /
+        if (req.path === "/") {
           return next();
         }
 
         // Apply apiAuth for all other GET routes
-        apiAuth(req, res, next);
+        return apiAuth(req, res, next);
       });
 
       app.use(apiLogger);
@@ -57,6 +57,7 @@ const startServer = async () => {
       app.use(['/team', '/teams'], require('./routes/teamRoute'));
       app.use(['/season', '/seasons'], require('./routes/seasonRoute'));
       app.use(['/tournament', '/tournaments'], require('./routes/tournamentRoute'));
+      app.use('/cron', require('./routes/cronRoute'));
       app.use('/', require('./routes/generalRoute'));
 
       app.use((err, req, res, next) => {
