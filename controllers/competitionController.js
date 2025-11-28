@@ -74,12 +74,15 @@ exports.competitions = async(req, res) => {
 exports.stats = async(req, res) => {
     try{
         const {competitionId, statType} = req.params;
-        const {paged} = req.query;
+        const {paged, format} = req.query;
         let fieldName = statType;
         if(!statType){
             fieldName = 'default';
         }
         const filters = {cid: Number(competitionId)};
+        if(format && format != ''){
+            filters.format = { $regex: format, $options: "i" }
+        }
         let result = [];
         if(paged <= 1){
             result = await getFieldByAPI(CompStatModel, fieldName, filters);

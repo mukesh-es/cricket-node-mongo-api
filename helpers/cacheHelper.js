@@ -157,7 +157,7 @@ function getApiCacheTime(apiName, options = {}) {
     ],
 
     // 600 seconds
-    600: ['season_app_ads', 'seasons_all', 'seasons', 'match_squads_stats'],
+    600: ['season_app_ads', 'seasons_all', 'seasons', 'match_squads_stats', 'changelogs'],
 
     // 60 seconds
     60: [

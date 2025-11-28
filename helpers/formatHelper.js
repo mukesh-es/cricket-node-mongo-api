@@ -103,32 +103,45 @@ function formatNewsInfo(data){
     }
 }
 
-function formatChangeLogList(data, description=false){
+function formatChangeLogList(data){
+    const reelCDN = getReelCDN();
     let info = {
         id: data.id,
         title: data.title??'',
         subtitle: data.subtitle??'',
-        img_url: data.img_url??'',
+        img_url: `${data.img_url ? `${reelCDN}change_logs/${data.img_url}` : ''}`,
         created: data.created ? dayMonthAbbrYear(data.created) : '',
     }
-    if(description){
-        info.description = data.description??'';
+    return info;
+}
+
+function formatChangeLogInfo(data){
+    const reelCDN = getReelCDN();
+    let info = {
+        id: data.id,
+        title: data.title??'',
+        subtitle: data.subtitle??'',
+        description: data.description??'',
+        img_url: `${data.img_url ? `${reelCDN}change_logs/${data.img_url}` : ''}`,
+        created: data.created,
     }
     return info;
 }
 
 const dayMonthAbbrYear = (timestamp) => {
-    if (!timestamp) return '';
+  if (!timestamp) return '';
 
-    const date = new Date(timestamp * 1000); 
-    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+  const date = new Date(timestamp * 1000);
+  const options = { day: '2-digit', month: 'short', year: 'numeric' };
 
-    return date.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+  const [day, month, year] = date.toLocaleDateString('en-GB', options).split(' ');
+  return `${day} ${month}, ${year}`;
 };
 
 module.exports = {
     formatCompetitionInfo, 
     formatReelInfo, 
     formatNewsInfo, 
-    formatChangeLogList
+    formatChangeLogList,
+    formatChangeLogInfo
 };

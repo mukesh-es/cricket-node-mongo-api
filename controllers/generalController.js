@@ -5,7 +5,7 @@ const { getApiURL, isValidId, getPagination } = require('../helpers/helpers');
 const { getConfigSync } = require('../helpers/configHelper');
 const callAPI = require('../helpers/apiHelper');
 const { getContextValue } = require('../middlewares/requestContext');
-const { formatChangeLogList } = require('../helpers/formatHelper');
+const { formatChangeLogList, formatChangeLogInfo } = require('../helpers/formatHelper');
 
 exports.config = async(req, res) => {
     try{
@@ -33,7 +33,9 @@ exports.fieldData = async(req, res) => {
             const totalItems = await ChangeLogModel.countDocuments(filters);
             const pagination = getPagination(paged, per_page);
             logsResult = await ChangeLogModel.find(filters);
-            const items = logsResult.map(r => formatChangeLogList(r, descriptionStatus));
+            const items = logsResult.map(r =>
+                validId ? formatChangeLogInfo(r) : formatChangeLogList(r)
+            );
             const totalItemsCount = Number(totalItems);
             result = itemsResponse(items, totalItemsCount, pagination.limit);
             if(validId && totalItemsCount > 0){
