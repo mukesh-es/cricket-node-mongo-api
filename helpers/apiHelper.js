@@ -6,8 +6,8 @@ async function callAPI({
   method = "GET",
   data = {},
   headers = {},
-  retries = 2,          // automatic retry on failure
-  timeout = 5000        // 5 sec timeout
+  retries = 2,
+  timeout = 7000,
 } = {}) {
   let attempt = 0;
 
@@ -19,44 +19,31 @@ async function callAPI({
         headers,
         data,
         timeout,
-        validateStatus: () => true // prevent axios from throwing on 4xx/5xx
+        validateStatus: () => true // prevents axios from throwing on 401/500
       });
 
-      // If API returns unauthorized or server error — handle gracefully
-      if ([401, 403].includes(response.status)) {
-        errorWithTime("AUTH ERROR", response.status, url);
-        return { success: false, error: "unauthorized", status: response.status };
+      // If status is 401 or 500 → treat as error
+      if (response.status >= 400) {
+        throw new Error(`HTTP ${response.status}`);
       }
 
-      if (response.status >= 500) {
-        throw new Error("Server error " + response.status);
-      }
-
-      // Normal success structure
-      return {
-        success: true,
-        status: response.status,
-        data: response.data?.response ?? response.data ?? []
-      };
+      // Keep your exact return behavior
+      const responseData = response.data;
+      return responseData?.response ?? [];
 
     } catch (err) {
       attempt++;
 
-      // Retry only on network or server crash
+      // Retry only if attempts left
       if (attempt <= retries) {
-        errorWithTime(`Retrying (${attempt}/${retries})`, err.message, url);
-        await new Promise(res => setTimeout(res, 500)); // small delay
+        errorWithTime(`Retry ${attempt}/${retries}`, err.message, url);
+        await new Promise(res => setTimeout(res, 300));
         continue;
       }
 
-      // All retries failed → return safe response
-      errorWithTime("API FINAL ERROR", err.message, url);
-      return {
-        success: false,
-        error: err.message,
-        status: null,
-        data: []
-      };
+      // Final failure → return null (YOUR original way)
+      errorWithTime("API call error:", err.message, url);
+      return null;
     }
   }
 }
