@@ -42,6 +42,10 @@ function getPages(totalCount, limit){
 }
 
 function getApiURL(path, base='aacdn'){
+    const firstChar = path.charAt(0);
+    if(firstChar === '/'){
+        path = path.slice(1);
+    }
     const baseObj = {
         aacdn: process.env.APPAPI_CDN_BASE,
         rest: process.env.REST_APPAPI_BASE
