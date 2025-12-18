@@ -25,10 +25,12 @@ exports.fieldData = async(req, res) => {
                 const url = getApiURL(req.originalUrl);
                 result = await callAPI({url});
             }
-        }else if(resource === 'newpoint2'){
-            const url = getApiURL(req.originalUrl, 'rest');
-            result = await callAPI({url});
-        }else{
+        }
+        // else if(resource === 'newpoint2'){
+        //     const url = getApiURL(req.originalUrl, 'rest');
+        //     result = await callAPI({url});
+        // }
+        else{
             resourceModel = MatchModel;
         }
         if(resourceModel && fieldName){
