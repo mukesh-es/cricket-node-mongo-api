@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const configModel = require("../models/configModel");
-const { errorWithTime } = require("./helpers");
+const { errorWithTime } = require("./loggerHelper");
 const { getRedisClient, redisEnabled } = require("../config/redis");
 
 let cachedConfig = null;
@@ -87,7 +87,7 @@ module.exports = { getConfigSync, reloadConfig };
 
 
 
-// const { errorWithTime } = require('./helpers');
+// const { errorWithTime } = require('./loggerHelper');
 
 // let cachedConfig = null;
 // let lastLoadedTime = 0;

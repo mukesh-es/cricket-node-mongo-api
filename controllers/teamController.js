@@ -44,7 +44,7 @@ exports.fieldData = async(req, res) => {
 
         let result;
         if(resource === 'matches'){
-            const url = getApiURL(req.originalUrl);
+            const url = getApiURL({path: req.originalUrl});
             result = await callAPI({url});
         }else{
             let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;

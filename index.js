@@ -11,7 +11,7 @@ const { connectRedis } = require('./config/redis');
 const express = require('express');
 const app = express();
 const connectMongoDB = require('./db/mongoDB');
-const { errorWithTime } = require('./helpers/helpers');
+const { errorWithTime } = require('./helpers/loggerHelper');
 
 app.use(express.json());
 

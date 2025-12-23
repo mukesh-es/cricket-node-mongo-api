@@ -4,7 +4,7 @@ const { sendResponse } = require('../utils/responseHandler');
 const { getContextValue } = require('../middlewares/requestContext');
 const { getApiCacheTime, getCacheKey } = require('../helpers/cacheHelper');
 const { apiMap } = require('../config/apiMap');
-const { errorWithTime } = require('../helpers/helpers');
+const { errorWithTime } = require('../helpers/loggerHelper');
 
 const apiCache = ({cacheKey, ttl = 0}={}) => {
 

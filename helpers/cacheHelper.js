@@ -4,7 +4,7 @@ const { getConfigSync } = require("../helpers/configHelper");
 const { getContextValue } = require('../middlewares/requestContext');
 const mysqlDB = require('../db/mysqlDB');
 const crypto = require('crypto');
-const { errorWithTime } = require('./helpers');
+const { errorWithTime } = require('./loggerHelper');
 
 async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
   try {

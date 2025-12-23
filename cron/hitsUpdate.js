@@ -6,7 +6,7 @@ const { getTokenData } = require('../helpers/cacheHelper');
 // Database Connection
 const connectMongoDB = require('../db/mongoDB');
 const mysqlDB = require('../db/mysqlDB');
-const { errorWithTime } = require('../helpers/helpers');
+const { errorWithTime } = require('../helpers/loggerHelper');
 
 module.exports = async function updateHits(){
   const today = formatDate();

@@ -25,7 +25,7 @@ exports.fieldData = async(req, res) => {
             }
             result = await getCompetitionsList(queryParams);
         }else if(apiName === 'seasons_ads'){
-            const url = getApiURL(req.originalUrl);
+            const url = getApiURL({path: req.originalUrl});
             result = await callAPI({url});
         }else{
             const isReel = resource == 'competitions';

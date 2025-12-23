@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { errorWithTime } = require("./helpers");
+const { errorWithTime } = require("./loggerHelper");
 
 async function callAPI({
   url,

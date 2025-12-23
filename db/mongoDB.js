@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { errorWithTime } = require('../helpers/helpers');
+const { errorWithTime } = require('../helpers/loggerHelper');
 
 const connectMongoDB = async () => {
     try{

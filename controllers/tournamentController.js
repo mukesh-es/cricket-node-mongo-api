@@ -42,7 +42,7 @@ exports.stats = async(req, res) => {
         const filters = {tournament_id: Number(tournamentId)};
         let result;
         if(team_id){
-            const url = getApiURL(req.originalUrl);
+            const url = getApiURL({path: req.originalUrl});
             result = await callAPI({url});
         }else{
             result = await getFieldByAPI(TourStatModel, fieldName, filters);
