@@ -1,7 +1,7 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
 const { DEFAULT_PERPAGE_LIMITS } = require("../config/constants");
 const { getContextValue } = require("../middlewares/requestContext");
-const { formatDateTime } = require("../utils/dateUtils");
+const { getConfigSync } = require("./configHelper");
 
 function getApiName(path) {
     const cleanPath = path.split('?')[0];
@@ -41,16 +41,35 @@ function getPages(totalCount, limit){
     return Math.ceil(totalCount / limit)
 }
 
-function getApiURL(path, base='aacdn'){
-    const firstChar = path.charAt(0);
-    if(firstChar === '/'){
-        path = path.slice(1);
+function getApiURL({ path, base = 'aacdn', routePrefix = '' }) {
+    if (!path) {
+        throw new Error('path is required');
     }
-    const baseObj = {
+    path = path.replace(/^\/+/, '');
+    const baseObjEnv = {
         aacdn: process.env.APPAPI_CDN_BASE,
-        rest: process.env.REST_APPAPI_BASE
+        rest: process.env.REST_BASE,
+        appapi: process.env.APPAPI_BASE
+    };
+    const apiConfig = getConfigSync();
+    const configBases = apiConfig?.api_base_urls ?? {};
+
+    // env has priority
+    const allBases = {
+        ...configBases,
+        ...baseObjEnv
+    };
+    if (!(base in allBases) || !allBases[base]) {
+        throw new Error(`Invalid or missing API base: ${base}`);
     }
-    return `${baseObj[base]}${path}`;
+    let apiURL = allBases[base];
+
+    if (routePrefix) {
+        apiURL += `/${routePrefix}`;
+    }
+    apiURL += `${path}`;
+    
+    return apiURL;
 }
 
 function getValidCountry(country='in'){
@@ -63,16 +82,6 @@ function isValidId(id){
     return id !== undefined && id !== null && id !== '';
 }
 
-function logWithTime(...messages) {
-  const timestamp = formatDateTime();
-  console.log(`[${timestamp}]`, ...messages);
-}
-
-function errorWithTime(...messages) {
-  const timestamp = formatDateTime();
-  console.error(`[${timestamp}]`, ...messages);
-}
-
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -81,6 +90,4 @@ module.exports = {
     getApiURL,
     getValidCountry,
     isValidId,
-    logWithTime,
-    errorWithTime
 };

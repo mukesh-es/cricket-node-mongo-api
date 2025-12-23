@@ -1,5 +1,5 @@
 const redis = require('redis');
-const { errorWithTime } = require('../helpers/helpers');
+const { errorWithTime } = require('../helpers/loggerHelper');
 
 const redisEnabled = process.env.REDIS_ENABLED === 'true';
 let redisClient = null;
