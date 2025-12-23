@@ -48,7 +48,7 @@ function getApiURL({ path, base = 'aacdn', routePrefix = '' }) {
     path = path.replace(/^\/+/, '');
     const baseObjEnv = {
         aacdn: process.env.APPAPI_CDN_BASE,
-        rest: process.env.REST_APPAPI_BASE,
+        rest: process.env.REST_BASE,
         appapi: process.env.APPAPI_BASE
     };
     const apiConfig = getConfigSync();
