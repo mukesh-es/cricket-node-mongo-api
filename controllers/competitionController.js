@@ -84,7 +84,8 @@ exports.stats = async(req, res) => {
             filters.format = { $regex: format, $options: "i" }
         }
         let result = [];
-        if(paged <= 1){
+
+        if(!paged || paged <= 1){
             result = await getFieldByAPI(CompStatModel, fieldName, filters);
         }
         requestSuccess({res, result});
