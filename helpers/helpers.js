@@ -41,13 +41,12 @@ function getPages(totalCount, limit){
     return Math.ceil(totalCount / limit)
 }
 
-function getApiURL({ path, base = 'aacdn', routePrefix = '' }) {
+function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
     if (!path) {
         throw new Error('path is required');
     }
     path = path.replace(/^\/+/, '');
     const baseObjEnv = {
-        aacdn: process.env.APPAPI_CDN_BASE,
         rest: process.env.REST_BASE,
         appapi: process.env.APPAPI_BASE
     };
@@ -65,10 +64,9 @@ function getApiURL({ path, base = 'aacdn', routePrefix = '' }) {
     let apiURL = allBases[base];
 
     if (routePrefix) {
-        apiURL += `/${routePrefix}`;
+        apiURL += `${routePrefix}/`;
     }
     apiURL += `${path}`;
-    
     return apiURL;
 }
 
