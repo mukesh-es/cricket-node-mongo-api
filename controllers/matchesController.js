@@ -10,7 +10,7 @@ const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
-        const {matchId, resource} = req.params;
+        const {matchId, resource, latest} = req.params;
         const {iid, pid} = req.query;
         const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
@@ -26,7 +26,13 @@ exports.fieldData = async(req, res) => {
                 result = await callAPI({url});
             }
         }else if(resource === 'newpoint2'){
-            const url = getApiURL({path: req.originalUrl, base: 'appapi'});
+            let url='';
+            if(latest && latest == 1){
+                url = getApiURL({path: req.originalUrl, base: 'appapi'});
+            }else{
+                url = getApiURL({path: req.originalUrl, base: 'rest', routePrefix: 'appapi'});
+            }
+            console.log('url: ', url);
             result = await callAPI({url});
         }
         else{

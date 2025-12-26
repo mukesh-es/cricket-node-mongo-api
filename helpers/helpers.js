@@ -64,7 +64,7 @@ function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
     let apiURL = allBases[base];
 
     if (routePrefix) {
-        apiURL += `/${routePrefix}`;
+        apiURL += `${routePrefix}/`;
     }
     apiURL += `${path}`;
     return apiURL;
