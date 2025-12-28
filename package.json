@@ -17,6 +17,7 @@
     "fs": "^0.0.1-security",
     "mongodb": "^5.9.2",
     "mongoose": "^7.8.7",
+    "mysql2": "^3.16.0",
     "redis": "^5.8.3"
   }
 }
