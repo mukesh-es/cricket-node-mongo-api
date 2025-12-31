@@ -80,6 +80,32 @@ function isValidId(id){
     return id !== undefined && id !== null && id !== '';
 }
 
+function replacePathSegment(url, oldSegment, newSegment) {
+  if (!url || !oldSegment) return url;
+
+  const [path, query] = url.split('?');
+
+  const updatedPath = path
+    .split('/')
+    .map(segment => segment === oldSegment ? newSegment : segment)
+    .join('/');
+
+  return query ? `${updatedPath}?${query}` : updatedPath;
+}
+
+function removeQueryParam(url, paramToRemove) {
+  if (!url || !paramToRemove) return url;
+
+  const [path, query] = url.split('?');
+  if (!query) return url;
+
+  const params = new URLSearchParams(query);
+  params.delete(paramToRemove);
+
+  const newQuery = params.toString();
+  return newQuery ? `${path}?${newQuery}` : path;
+}
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -88,4 +114,6 @@ module.exports = {
     getApiURL,
     getValidCountry,
     isValidId,
+    replacePathSegment,
+    removeQueryParam
 };
