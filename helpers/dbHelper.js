@@ -6,7 +6,8 @@ const ReelModel = require('../models/reelModel');
 const NewsModel = require('../models/newsModel');
 
 const { getTimestampRange, getUnixTimestamp, toIST } = require('../utils/dateUtils');
-const { getPagination, getPages, getValidCountry, errorWithTime } = require('./helpers');
+const { getPagination, getPages, getValidCountry } = require('./helpers');
+const { errorWithTime } = require("./loggerHelper");
 const { formatCompetitionInfo, formatReelInfo, formatNewsInfo } = require('./formatHelper');
 const { NEWS_CATEGORIES, NEWS_APP_CATEGORIES, COMPETITION_STATUS } = require('../config/constants');
 const { getTokenFeatures } = require('./cacheHelper');
