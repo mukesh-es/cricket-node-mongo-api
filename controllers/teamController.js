@@ -2,7 +2,7 @@ const TeamModel = require('../models/teamModel');
 const TeamTrackerModel = require('../models/teamTrackerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getTeamsList } = require('../helpers/dbHelper');
-const { getFieldName, getApiURL } = require('../helpers/helpers');
+const { getFieldName, getApiURL, getFormatCode, isNumeric } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
 const { getContextValue } = require('../middlewares/requestContext');
 
@@ -47,7 +47,13 @@ exports.fieldData = async(req, res) => {
             const url = getApiURL({path: req.originalUrl});
             result = await callAPI({url});
         }else{
-            let resourceModel = resource == 'crickettracker' ? TeamTrackerModel : TeamModel;
+            let resourceModel = TeamModel;
+            if(resource == 'crickettracker'){
+                resourceModel = TeamTrackerModel
+                if(format){
+                    filters.formats = !isNumeric(format) ? getFormatCode(format) : format;
+                }
+            }
             result = await getFieldByAPI(resourceModel, fieldName, filters);
         }
         requestSuccess({res, result});

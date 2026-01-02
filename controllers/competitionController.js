@@ -4,7 +4,7 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList, getCompetitionsList } = require('../helpers/dbHelper');
-const { getFieldName, getValidCountry } = require('../helpers/helpers');
+const { getFieldName, getValidCountry, getFormatName, isNumeric } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
 
@@ -38,7 +38,7 @@ exports.fieldData = async(req, res) => {
             result = await getMatchesList(queryParams);
         }else if(resource === 'crickettracker'){
             if(format){
-                filters.format = format;
+                filters.format = isNumeric(format) ? getFormatName(format) : format;
             }
             result = await getFieldByAPI(CompStatModel, resource, filters);
         }else{
