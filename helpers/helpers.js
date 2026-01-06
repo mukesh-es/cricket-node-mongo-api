@@ -42,32 +42,48 @@ function getPages(totalCount, limit){
 }
 
 function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
-    if (!path) {
-        throw new Error('path is required');
-    }
-    path = path.replace(/^\/+/, '');
-    const baseObjEnv = {
-        rest: process.env.REST_BASE,
-        appapi: process.env.APPAPI_BASE
-    };
-    const apiConfig = getConfigSync();
-    const configBases = apiConfig?.api_base_urls ?? {};
+  if (!path) {
+    throw new Error('path is required');
+  }
 
-    // env has priority
-    const allBases = {
-        ...configBases,
-        ...baseObjEnv
-    };
-    if (!(base in allBases) || !allBases[base]) {
-        throw new Error(`Invalid or missing API base: ${base}`);
-    }
-    let apiURL = allBases[base];
+  path = path.replace(/^\/+/, '');
 
-    if (routePrefix) {
-        apiURL += `${routePrefix}/`;
+  const baseObjEnv = {
+    rest: process.env.REST_BASE,
+    appapi: process.env.APPAPI_BASE
+  };
+
+  const apiConfig = getConfigSync();
+  const configBases = apiConfig?.api_base_urls ?? {};
+
+  const allBases = {
+    ...configBases,
+    ...baseObjEnv
+  };
+
+  if (!(base in allBases) || !allBases[base]) {
+    throw new Error(`Invalid or missing API base: ${base}`);
+  }
+
+  let apiURL = allBases[base];
+
+  if (routePrefix) {
+    apiURL += `${routePrefix}/`;
+  }
+
+  // ---- SAFE query handling ----
+  if (apiConfig?.token && path.includes('?')) {
+    const [pathname, queryString] = path.split('?');
+    const params = new URLSearchParams(queryString);
+
+    if (params.has('token')) {
+      params.set('token', apiConfig.token);
+      path = `${pathname}?${params.toString()}`;
     }
-    apiURL += `${path}`;
-    return apiURL;
+  }
+
+  apiURL += path;
+  return apiURL;
 }
 
 function getValidCountry(country='in'){
