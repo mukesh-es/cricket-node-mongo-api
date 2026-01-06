@@ -14,20 +14,40 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
       return await fetcher();
     }
 
-    // 1️⃣ Try Redis cache
+    // Try Redis cache
     const cached = await redisClient.get(cacheKey);
     if (cached) {
-      return JSON.parse(cached);
+      try {
+        return JSON.parse(cached);
+      } catch {
+        // corrupted cache → delete
+        await redisClient.del(cacheKey);
+      }
     }
 
-    // 2️⃣ Fetch from DB
+    // Simple lock to prevent stampede
+    const lockKey = `${cacheKey}:lock`;
+    const lock = await redisClient.set(lockKey, "1", {
+      NX: true,
+      EX: 5, // 5 sec lock
+    });
+
+    // Another request is already fetching
+    if (!lock) {
+      await new Promise(r => setTimeout(r, 100));
+      return await getOrSetCache(cacheKey, fetcher, ttlSeconds);
+    }
+
+    // Fetch from source
     const data = await fetcher();
 
-    // 3️⃣ Save to cache for ttlSeconds (10 min)
-    if (data !== undefined && data !== null) {
-      if (data && typeof data === 'object') {
-        await redisClient.setEx(cacheKey, ttlSeconds, JSON.stringify(data));
-      }
+    // Cache only valid data
+    if (data && typeof data === "object" && Object.keys(data).length) {
+      await redisClient.setEx(
+        cacheKey,
+        ttlSeconds,
+        JSON.stringify(data)
+      );
     }
 
     return data;
@@ -39,7 +59,6 @@ async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
 
 function verifyToken(token){
     const apiConfig = getConfigSync();
-
     // No config data
     if (!apiConfig) return false;
 
