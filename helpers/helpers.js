@@ -1,5 +1,5 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
-const { DEFAULT_PERPAGE_LIMITS } = require("../config/constants");
+const { DEFAULT_PERPAGE_LIMITS, CRICKET_FORMATS } = require("../config/constants");
 const { getContextValue } = require("../middlewares/requestContext");
 const { getConfigSync } = require("./configHelper");
 
@@ -80,6 +80,58 @@ function isValidId(id){
     return id !== undefined && id !== null && id !== '';
 }
 
+function replacePathSegment(url, oldSegment, newSegment) {
+  if (!url || !oldSegment) return url;
+
+  const [path, query] = url.split('?');
+
+  const updatedPath = path
+    .split('/')
+    .map(segment => segment === oldSegment ? newSegment : segment)
+    .join('/');
+
+  return query ? `${updatedPath}?${query}` : updatedPath;
+}
+
+function removeQueryParam(url, paramToRemove) {
+  if (!url || !paramToRemove) return url;
+
+  const [path, query] = url.split('?');
+  if (!query) return url;
+
+  const params = new URLSearchParams(query);
+  params.delete(paramToRemove);
+
+  const newQuery = params.toString();
+  return newQuery ? `${path}?${newQuery}` : path;
+}
+
+const cricketFormatsReverse = Object.fromEntries(
+  Object.entries(CRICKET_FORMATS).map(([k, v]) => [v.toLowerCase(), Number(k)])
+);
+
+const getFormatName = (value) => {
+  if (!Number.isInteger(Number(value))) return null;
+
+  const format = CRICKET_FORMATS[Number(value)];
+  return format
+    ? format.replace(/\s+/g, "").toLowerCase()
+    : null;
+};
+
+const getFormatCode = (value) => {
+  if (typeof value !== "string") return null;
+
+  return cricketFormatsReverse[value.toLowerCase()] ?? null;
+};
+
+const isNumeric = (value) => {
+  return (
+    (typeof value === "number" && !Number.isNaN(value)) ||
+    (typeof value === "string" && /^[0-9]+$/.test(value))
+  );
+};
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -88,4 +140,9 @@ module.exports = {
     getApiURL,
     getValidCountry,
     isValidId,
+    replacePathSegment,
+    removeQueryParam,
+    getFormatName,
+    getFormatCode,
+    isNumeric
 };

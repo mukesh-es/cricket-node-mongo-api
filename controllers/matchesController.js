@@ -4,14 +4,14 @@ const InningModel = require('../models/inningModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList } = require('../helpers/dbHelper');
-const { getFieldName, getApiURL, getValidCountry } = require('../helpers/helpers');
+const { getFieldName, getApiURL, getValidCountry, replacePathSegment, removeQueryParam } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
 const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
         const {matchId, resource, latest} = req.params;
-        const {iid, pid} = req.query;
+        const {iid, pid, pointapi} = req.query;
         const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         let result;
@@ -27,15 +27,15 @@ exports.fieldData = async(req, res) => {
             }
         }else if(resource === 'newpoint2'){
             let url='';
-            if(latest && latest == 1){
-                url = getApiURL({path: req.originalUrl, base: 'appapi'});
+            if(pointapi && pointapi == 1){
+                let rewrittenPath = replacePathSegment(req.originalUrl, 'newpoint2', 'point');
+                // rewrittenPath = removeQueryParam(rewrittenPath, 'point');
+                url = getApiURL({path: rewrittenPath, base: 'appapi'});
             }else{
                 url = getApiURL({path: req.originalUrl, base: 'rest', routePrefix: 'appapi'});
             }
-            console.log('url: ', url);
             result = await callAPI({url});
-        }
-        else{
+        } else{
             resourceModel = MatchModel;
         }
         if(resourceModel && fieldName){

@@ -49,6 +49,23 @@ const DEFAULT_PERPAGE_LIMITS = {
   changelogs: 20
 };
 
+const CRICKET_FORMATS = {
+	1 : "ODI",
+	2: "Test",
+	3: "T20I",
+	4: "List A",
+	5: "First Class",
+	6: "T20",
+	7: "Women ODI",
+	8: "Women T20",
+	9: "Youth ODI",
+	10: "Youth T20",
+	11: "Other",
+	17: "T10",
+	18: "T100",
+	19: "Women T100",
+};
+
 module.exports = { 
   HTTP_CODE, 
   MEDIA_TYPE_CODE, 
@@ -56,5 +73,6 @@ module.exports = {
   NEWS_CATEGORIES,
   NEWS_APP_CATEGORIES,
   DEFAULT_PERPAGE_LIMITS,
-  COMPETITION_STATUS
+  COMPETITION_STATUS,
+  CRICKET_FORMATS
 };
