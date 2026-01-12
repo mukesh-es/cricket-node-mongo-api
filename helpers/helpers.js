@@ -25,14 +25,18 @@ function getFieldName(apiName){
     return apiFieldsKeys?.[apiName] || null;
 }
 
+function getOffset(pageNumber, perPage){
+  return (pageNumber - 1) * perPage;
+}
+
 function getPagination(pageNumber = 1, perPage = 20) {
     const apiName = getContextValue('api_name');
     pageNumber = Number(pageNumber) || 1;
     const defaultLimit = DEFAULT_PERPAGE_LIMITS[apiName] || DEFAULT_PERPAGE_LIMITS.default;
     perPage = Math.min(perPage, defaultLimit);
-
+    
     return {
-        offset: (pageNumber - 1) * perPage,
+        offset: getOffset(pageNumber, perPage),
         limit: perPage
     };
 }
@@ -151,7 +155,8 @@ const isNumeric = (value) => {
 module.exports = { 
     getApiName, 
     getFieldName, 
-    getPagination, 
+    getPagination,
+    getOffset, 
     getPages, 
     getApiURL,
     getValidCountry,
