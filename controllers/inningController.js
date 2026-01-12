@@ -30,9 +30,9 @@ exports.fieldData = async(req, res) => {
                 ? [...parsedResult.commentaries]
                 : [];
             
-            if (String(order).toLowerCase() === 'desc') {
-                commentariesArray.reverse();
-            }
+            // if (String(order).toLowerCase() === 'asc') {
+            //     commentariesArray.reverse();
+            // }
 
             parsedResult.commentaries =
                 per_page > 0
