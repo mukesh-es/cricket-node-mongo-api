@@ -56,6 +56,9 @@ async function getMatchesList(inputs) {
                 throw new Error("You don't have a subscription for this competition.");
             }
             filters.cid = Number(cid);
+            if(apiName === 'competitions_matches'){
+                order = 'asc';
+            }
         }else{
             filters.cid = {$in: allowedCompetitions};
         }
@@ -111,7 +114,7 @@ async function getMatchesList(inputs) {
 
         const sortingOrder = order == 'desc' ? -1 : 1;
         const sortBy = { timestamp_start: sortingOrder, match_number: 1 }
-
+        
         let items = [];
         let totalItems = 0;
         let limit = 0;
