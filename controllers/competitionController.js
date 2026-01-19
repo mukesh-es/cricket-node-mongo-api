@@ -4,7 +4,7 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList, getCompetitionsList } = require('../helpers/dbHelper');
-const { getFieldName, getValidCountry, getFormatName, isNumeric } = require('../helpers/helpers');
+const { getFieldName, getValidCountry, getFormatName, isNumeric, getOffset } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
 
@@ -74,7 +74,7 @@ exports.competitions = async(req, res) => {
 exports.stats = async(req, res) => {
     try{
         const {competitionId, statType} = req.params;
-        const {format} = req.query;
+        let {format, paged, per_page} = req.query;
         let fieldName = statType;
         if(!statType){
             fieldName = 'default';
@@ -87,7 +87,29 @@ exports.stats = async(req, res) => {
         if(!result){
             result = await getFieldByAPI(CompStatModel, 'default', filters);
         }
-        requestSuccess({res, result});
+
+        paged = Number(paged) || 1;
+        per_page = Number(per_page) || 30;
+        const offset = getOffset(paged, per_page);
+        const parsedResult =
+                typeof result === 'string' ? JSON.parse(result) : result;
+
+        let statsArray = Array.isArray(parsedResult?.stats)
+                ? [...parsedResult.stats]
+                : [];
+        const statsCount = statsArray.length;
+        if(statsCount < per_page && paged > Number(parsedResult.total_pages)){
+            parsedResult.stats = [];
+        }else{
+    
+            parsedResult.stats =
+                    per_page > 0
+                        ? statsArray.slice(offset, offset + per_page)
+                        : statsArray;
+        }
+            
+
+        requestSuccess({res, result: parsedResult});
     } catch(err){
         requestFailed({res, err});
     }
