@@ -152,6 +152,13 @@ const isNumeric = (value) => {
   );
 };
 
+const normalizeURL = (url = '') => {
+  if (typeof url !== 'string') return url;
+
+  // replace multiple slashes with single slash
+  return url.replace(/\/{2,}/g, '/');
+};
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -165,5 +172,6 @@ module.exports = {
     removeQueryParam,
     getFormatName,
     getFormatCode,
-    isNumeric
+    isNumeric,
+    normalizeURL
 };
