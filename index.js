@@ -12,6 +12,7 @@ const express = require('express');
 const app = express();
 const connectMongoDB = require('./db/mongoDB');
 const { errorWithTime } = require('./helpers/loggerHelper');
+const { normalizeURL } = require('./helpers/helpers');
 
 app.use(express.json());
 
@@ -22,6 +23,12 @@ const startServer = async () => {
       console.log("MongoDB connected");
 
       await connectRedis();
+
+      // Normalize URL
+      app.use((req, res, next) => {
+        req.url = normalizeURL(req.url);
+        next();
+      });
 
       // Middlewares
       app.use((req, res, next) => {
