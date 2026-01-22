@@ -2,16 +2,41 @@ const MatchModel = require('../models/matchesModel');
 const PlayerModel = require('../models/playerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getPlayersList } = require('../helpers/dbHelper');
-const { getFieldName } = require('../helpers/helpers');
+const { getFieldName, getOffset } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
     try{
-        const {playerId} = req.params;
+        const {playerId, resource} = req.params;
+
+        let {paged, per_page} = req.query;
+
+        paged = Number(paged) || 1;
+        per_page = Number(per_page) || 10;
+
         const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
         const filters = {pid: Number(playerId)};
-        const result = await getFieldByAPI(PlayerModel, fieldName, filters);
+        let result = await getFieldByAPI(PlayerModel, fieldName, filters);
+        if(resource === 'playermatches'){
+            const offset = getOffset(paged, per_page);
+            const parsedResult =
+                    typeof result === 'string' ? JSON.parse(result) : result;
+
+            let itemsArray = Array.isArray(parsedResult?.items)
+                    ? [...parsedResult.items]
+                    : [];
+            const itemsCount = itemsArray.length;
+            if(itemsCount < per_page && paged > Number(parsedResult.total_pages)){
+                parsedResult.items = [];
+            }else{
+                parsedResult.items =
+                        per_page > 0
+                            ? itemsArray.slice(offset, offset + per_page)
+                            : itemsArray;
+            }
+            result = parsedResult;
+        }
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
