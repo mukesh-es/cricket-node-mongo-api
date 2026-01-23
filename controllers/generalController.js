@@ -10,6 +10,10 @@ const { formatChangeLogList, formatChangeLogInfo } = require('../helpers/formatH
 exports.config = async(req, res) => {
     try{
         const result = getConfigSync();
+
+        result.default_urls.token = process.env.FALSE_TOKEN;
+        result.token = process.env.FALSE_TOKEN;
+        delete result.other_allowed_tokens;
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
