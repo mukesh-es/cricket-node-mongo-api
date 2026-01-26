@@ -5,6 +5,7 @@ const { getContextValue } = require('../middlewares/requestContext');
 const mysqlDB = require('../db/mysqlDB');
 const crypto = require('crypto');
 const { errorWithTime } = require('./loggerHelper');
+const { normalizeStr, normalizeSpaces } = require('./helpers');
 
 async function getOrSetCache(cacheKey, fetcher, ttlSeconds = 600) {
   try {
@@ -62,20 +63,24 @@ function verifyToken(token){
     // No config data
     if (!apiConfig) return false;
 
+    token = normalizeStr(token);
+
     // Token matched with token
     const { token: mainToken, other_allowed_tokens = [] } = apiConfig;
 
+    const normalizedOtherTokens = normalizeSpaces(other_allowed_tokens);
+
     return (
-        token === mainToken ||
-        other_allowed_tokens.includes(token)
+        token === normalizeStr(mainToken) ||
+        normalizedOtherTokens.includes(token)
     );
 }
 
-function normalizeToken(token) {
+function getConfigToken() {
     const apiConfig = getConfigSync();
     if (!apiConfig) return null;
 
-    return apiConfig.token; // always return main token
+    return normalizeStr(apiConfig.token) // always return main token
 }
 
 async function getTokenData(token='') {
@@ -209,7 +214,7 @@ function getApiCacheTime(apiName, options = {}) {
 
 module.exports = { 
   verifyToken, 
-  normalizeToken, 
+  getConfigToken, 
   getTokenData, 
   getTokenFeatures, 
   getApiCacheTime, 

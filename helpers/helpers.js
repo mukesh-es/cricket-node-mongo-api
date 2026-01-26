@@ -159,6 +159,29 @@ const normalizeURL = (url = '') => {
   return url.replace(/\/{2,}/g, '/');
 };
 
+function normalizeSpaces(input) {
+  // If input is a string
+  if (typeof input === 'string') {
+    return normalizeStr(input);
+  }
+
+  // If input is an array
+  if (Array.isArray(input)) {
+    return input.map(item =>
+      typeof item === 'string'
+        ? normalizeStr(item)
+        : item
+    );
+  }
+
+  // Return as-is for other types
+  return input;
+}
+
+const normalizeStr = (str) => {
+  return str.trim().replace(/\s+/g, ' ');
+};
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -173,5 +196,7 @@ module.exports = {
     getFormatName,
     getFormatCode,
     isNumeric,
-    normalizeURL
+    normalizeURL,
+    normalizeStr,
+    normalizeSpaces
 };

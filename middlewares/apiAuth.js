@@ -1,4 +1,4 @@
-const { verifyToken, normalizeToken } = require('../helpers/cacheHelper');
+const { verifyToken, getConfigToken } = require('../helpers/cacheHelper');
 const { requestFailed, requestSuccess } = require('../utils/responseHandler');
 const { getApiName } = require('../helpers/helpers');
 const { runWithContext, getContextValue, setContextValue } = require('./requestContext');
@@ -15,9 +15,9 @@ const apiAuth = (req, res, next) => {
                 });
             }
 
-            const normalizedToken  = normalizeToken(token);
+            const configToken  = getConfigToken();
 
-            setContextValue('token', normalizedToken);
+            setContextValue('token', configToken);
             setContextValue('api_name', getApiName(req.originalUrl));
 
             next();
