@@ -6,15 +6,11 @@ async function callAPI({
   method = "GET",
   data = {},
   headers = {},
-  retries = 2,
-  timeout = 7000,
+  timeout = 15000,
 } = {}) {
-  let attempt = 0;
-
-  while (attempt <= retries) {
     try {
       const response = await axios({
-        method: method.toUpperCase(),
+        method: (method || "GET").toUpperCase(),
         url,
         headers,
         data,
@@ -32,20 +28,9 @@ async function callAPI({
       return responseData?.response ?? [];
 
     } catch (err) {
-      attempt++;
-
-      // Retry only if attempts left
-      if (attempt <= retries) {
-        errorWithTime(`Retry ${attempt}/${retries}`, err.message, url);
-        await new Promise(res => setTimeout(res, 300));
-        continue;
-      }
-
-      // Final failure → return null (YOUR original way)
       errorWithTime("API call error:", err.message, url);
       return null;
     }
-  }
 }
 
 module.exports = callAPI;
