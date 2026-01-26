@@ -6,8 +6,8 @@ const connectMongoDB = async () => {
     await mongoose.connect(process.env.MONGODB_URI, {
       maxPoolSize: 5,        // IMPORTANT
       minPoolSize: 1,        // IMPORTANT
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 30000,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 90000,
       heartbeatFrequencyMS: 10000,
     });
 
