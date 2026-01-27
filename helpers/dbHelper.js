@@ -42,7 +42,7 @@ async function getMatchesList(inputs) {
         } = inputs;
 
         const apiName = getContextValue('api_name');
-
+        status = status > 0 ? Number(status) : 0;
         if(!order || order == ''){
             order = 'desc';
         }
@@ -57,14 +57,14 @@ async function getMatchesList(inputs) {
             }
             filters.cid = Number(cid);
             if(apiName === 'competitions_matches'){
-                order = 'asc';
+                order = status === 2 ? 'desc' : 'asc';
             }
         }else{
             filters.cid = {$in: allowedCompetitions};
         }
 
-        if(status && status > 0){
-            if(status == 1){
+        if(status){
+            if(status === 1){
                 order = 'asc';
             }
             if(status == 2){
