@@ -7,12 +7,12 @@ const apiCache = require('./middlewares/apiCache');
 
 const { connectRedis } = require('./config/redis');
 
-
 const express = require('express');
 const app = express();
 const connectMongoDB = require('./db/mongoDB');
 const { errorWithTime } = require('./helpers/loggerHelper');
 const { normalizeURL } = require('./helpers/helpers');
+const path = require('path');
 
 app.use(express.json());
 
@@ -32,22 +32,11 @@ const startServer = async () => {
 
       // Middlewares
       app.use((req, res, next) => {
-        // Skip apiAuth for all POST requests
-        if (req.method === "POST") {
-          return next();
-        }
-
-        // Skip for /cron and all children
-        if (req.path.startsWith('/cron')) {
-          return next();
-        }
-
-        // Skip apiAuth for GET /
-        if (req.path === "/") {
-          return next();
-        }
-
-        // Apply apiAuth for all other GET routes
+        if (req.method === "POST") return next();
+        if (req.path.startsWith('/cron')) return next();
+        if (req.path.startsWith('/logs')) return next();
+  
+        if (req.path === "/") return next();
         return apiAuth(req, res, next);
       });
 
