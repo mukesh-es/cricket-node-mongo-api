@@ -366,29 +366,37 @@ async function getReelsList(inputs) {
         // Total Items
         const totalItems = await ReelModel.countDocuments(filters);
 
-        // Paginated Items
-        const result = await ReelModel.aggregate([
-        { $match: filters },
-        {
-            $addFields: {
-                normalizedTime: {
-                    $cond: [
-                    { $gt: ["$orderby_time", 9999999999] },
-                    { $divide: ["$orderby_time", 1000] },
-                    "$orderby_time"
-                    ]
-                }
-            }
-        },
-        { $sort: { normalizedTime: -1 } },
-        { $skip: pagination.offset },
-        { $limit: pagination.limit }
-        ]);
+        if(totalItems > 0){
+            const result = await ReelModel.find(filters).sort({ orderby_time: -1 }).skip(pagination.offset).limit(pagination.limit);
+            if (result) {
+                const items = result.map(r => formatReelInfo(r));
+                return itemsResponse(items, totalItems, pagination.limit);
+            } 
+        }
 
-        if (result) {
-            const items = result.map(r => formatReelInfo(r));
-            return itemsResponse(items, totalItems, pagination.limit);
-        } 
+        // Paginated Items
+        // const result = await ReelModel.aggregate([
+        //     { $match: filters },
+        //     {
+        //         $addFields: {
+        //             normalizedTime: {
+        //                 $cond: [
+        //                     { $gt: ["$orderby_time", 9999999999] },
+        //                     { $divide: ["$orderby_time", 1000] },
+        //                     "$orderby_time"
+        //                 ]
+        //             }
+        //         }
+        //     },
+        //     { $sort: { normalizedTime: -1 } },
+        //     { $skip: pagination.offset },
+        //     { $limit: pagination.limit }
+        // ]);
+
+        // if (result) {
+        //     const items = result.map(r => formatReelInfo(r));
+        //     return itemsResponse(items, totalItems, pagination.limit);
+        // } 
         return null;
 
     } catch (err) {
