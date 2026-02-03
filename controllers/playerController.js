@@ -46,10 +46,14 @@ exports.fieldData = async(req, res) => {
 exports.players = async(req, res) => {
     try{
         const queryParams = req.query;
+        const {search} = queryParams;
+        if(search && search.length < 5){
+            return requestFailed({res, message: "Please type atleast 5 characters"});
+        }
         const result = await getPlayersList(queryParams);
-        requestSuccess({res, result});
+        return requestSuccess({res, result});
     } catch(err){
-        requestFailed({res, err});
+        return ({res, err});
     }
 }
 
