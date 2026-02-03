@@ -204,28 +204,44 @@ async function getTeamsList(inputs) {
 }
 
 async function getPlayersList(inputs) {
+    let filters = {};
+    const {search, paged, per_page} = inputs;
+
+    if(search){
+        filters.title = { $regex: search, $options: "i" } 
+    }
+
+    const pagination = getPagination(paged, per_page);
+
     try{
-        let filters = {};
-        const {search, paged, per_page} = inputs;
 
-        if(search){
-            filters.title = { $regex: search, $options: "i" } 
-        }
-
-        const pagination = getPagination(paged, per_page);
+        const [totalItems, result] = await Promise.all([
+            PlayerModel.countDocuments(filters),
+            PlayerModel.find(filters, 'players_list')
+                .skip(pagination.offset)
+                .limit(pagination.limit)
+        ]);
 
         // Total Items
-        const totalItems = await PlayerModel.countDocuments(filters);
+        // const totalItems = await PlayerModel.countDocuments(filters);
 
         // Paginated Items
-        const result = await PlayerModel.find(filters, 'players_list').skip(pagination.offset).limit(pagination.limit);
+        // const result = await PlayerModel.find(filters, 'players_list').skip(pagination.offset).limit(pagination.limit);
+        
         if(result){
-            const items = result.map(r => JSON.parse(r.players_list)).flat();
+            const items = result.map(r => {
+                try {
+                    return JSON.parse(r.players_list);
+                } catch {
+                    return null;
+                }
+            }).filter(Boolean);
             return itemsResponse(items, String(totalItems), pagination.limit);
         }
         return null;
-    }catch(err){
-        return null;
+    }catch (err) {
+        console.error('getPlayersList error:', err);
+        throw err;
     }
 }
 
