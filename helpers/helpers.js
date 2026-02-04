@@ -182,6 +182,10 @@ const normalizeStr = (str) => {
   return str.trim().replace(/\s+/g, ' ');
 };
 
+function getPagesCount(total, perPage){
+  return Math.ceil(total / perPage);
+}
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -198,5 +202,6 @@ module.exports = {
     isNumeric,
     normalizeURL,
     normalizeStr,
-    normalizeSpaces
+    normalizeSpaces,
+    getPagesCount
 };

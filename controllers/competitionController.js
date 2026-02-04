@@ -4,7 +4,7 @@ const CompStatModel = require('../models/compStatModel');
 
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getMatchesList, getCompetitionsList } = require('../helpers/dbHelper');
-const { getFieldName, getValidCountry, getFormatName, isNumeric, getOffset } = require('../helpers/helpers');
+const { getFieldName, getValidCountry, getFormatName, isNumeric, getOffset, getPagesCount } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
 
@@ -101,12 +101,13 @@ exports.stats = async(req, res) => {
         if(statsCount < per_page && paged > Number(parsedResult.total_pages)){
             parsedResult.stats = [];
         }else{
-    
             parsedResult.stats =
                     per_page > 0
                         ? statsArray.slice(offset, offset + per_page)
                         : statsArray;
         }
+
+        parsedResult.total_pages = getPagesCount(statsCount, per_page);
             
 
         requestSuccess({res, result: parsedResult});

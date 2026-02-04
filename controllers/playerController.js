@@ -2,7 +2,7 @@ const MatchModel = require('../models/matchesModel');
 const PlayerModel = require('../models/playerModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, getPlayersList } = require('../helpers/dbHelper');
-const { getFieldName, getOffset } = require('../helpers/helpers');
+const { getFieldName, getOffset, getPagesCount } = require('../helpers/helpers');
 const { getContextValue } = require('../middlewares/requestContext');
 
 exports.fieldData = async(req, res) => {
@@ -35,6 +35,7 @@ exports.fieldData = async(req, res) => {
                             ? itemsArray.slice(offset, offset + per_page)
                             : itemsArray;
             }
+            parsedResult.total_pages = getPagesCount(itemsCount, per_page);
             result = parsedResult;
         }
         requestSuccess({res, result});
