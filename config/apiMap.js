@@ -60,6 +60,7 @@ const apiMap = {
     seasons_competitions: "season_competitions", // Reels
     seasons_news: "season_news",
     changelogs: "season_app_change_logs",
+    seasons_ads: "seasons_ads"
 };
 
 module.exports = { apiMap };
