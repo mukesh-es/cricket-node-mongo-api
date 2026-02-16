@@ -2,14 +2,17 @@ const ChangeLogModel = require('../models/changeLogModel');
 const { requestSuccess, requestFailed } = require('../utils/responseHandler');
 const { getFieldByAPI, itemsResponse } = require('../helpers/dbHelper');
 const { getApiURL, isValidId, getPagination } = require('../helpers/helpers');
-const { getConfigSync } = require('../helpers/configHelper');
+const { getConfigSync, reloadConfig } = require('../helpers/configHelper');
 const callAPI = require('../helpers/apiHelper');
 const { getContextValue } = require('../middlewares/requestContext');
 const { formatChangeLogList, formatChangeLogInfo } = require('../helpers/formatHelper');
 
 exports.config = async(req, res) => {
     try{
-        const {app_default_urls} = req.query;
+        const {app_default_urls, reload} = req.query;
+        if(reload){
+            reloadConfig();
+        }
 
         let result = {};
         if(app_default_urls){
