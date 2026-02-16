@@ -143,6 +143,13 @@ async function getTokenFeatures(type) {
 function getCacheKey(req, cacheKey = '') {
   const baseKey = `mongo_${cacheKey || 'api'}`;
 
+  const noParamsCacheKeys = ['seasons_ads'];
+
+  // No params used in cache key
+  if (noParamsCacheKeys.includes(cacheKey)) {
+    return baseKey;
+  }
+
   const query = req.query && Object.keys(req.query).length > 0
     ? JSON.stringify(Object.keys(req.query).sort().reduce((obj, key) => {
         obj[key] = req.query[key];
@@ -161,7 +168,29 @@ function getCacheKey(req, cacheKey = '') {
 
 function getApiCacheTime(apiName, options = {}) {
   const cacheMap = {
-    // 200 seconds
+    // 5 seconds
+    5: [
+      'match_info', 'match_innings_info', 'match_live', 'match_scorecard',
+      'matches', 'match_inning_commentary', 'match_inning_scorecard',
+      'match_squads', 'season_competitions', 'season_news'
+    ],
+
+    // 1 minute
+    60: [
+      'competition_matches', 'match_statistics', 'match_summary',
+      'match_wagons', 'competition_squads_match', 'matchcenter_info',
+      'team_team_player'
+    ],
+
+    // 2 minutes
+    120: [
+      'match_point', 'match_new_point', 'match_new_point2',
+      'match_advanced_stats', 'match_player_advanced_stats',
+      'player_advancestats', 'player_player_matches',
+      'player_player_vs_player_stats'
+    ],
+
+    // 3 minutes 20 seconds
     200: [
       'competitions', 'competition_overview', 'competition_squads',
       'competition_standings', 'competition_stats', 'competition_teams',
@@ -173,30 +202,11 @@ function getApiCacheTime(apiName, options = {}) {
       'tournament_tournament_playerstats'
     ],
 
-    // 5 seconds
-    5: [
-      'match_info', 'match_innings_info', 'match_live', 'match_scorecard',
-      'matches', 'match_inning_commentary', 'match_inning_scorecard',
-      'match_squads', 'season_competitions', 'season_news'
-    ],
-
-    // 600 seconds
+    // 10 minutes
     600: ['season_app_ads', 'seasons_all', 'seasons', 'match_squads_stats', 'changelogs'],
 
-    // 60 seconds
-    60: [
-      'competition_matches', 'match_statistics', 'match_summary',
-      'match_wagons', 'competition_squads_match', 'matchcenter_info',
-      'team_team_player'
-    ],
-
-    // 120 seconds
-    120: [
-      'match_point', 'match_new_point', 'match_new_point2',
-      'match_advanced_stats', 'match_player_advanced_stats',
-      'player_advancestats', 'player_player_matches',
-      'player_player_vs_player_stats'
-    ]
+    // 1 hour
+    3600: ['seasons_ads']
   };
 
   if (apiName === 'matchmatch_picks' && !options.picked_team) {

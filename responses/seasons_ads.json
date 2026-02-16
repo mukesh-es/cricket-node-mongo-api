@@ -1,0 +1,89 @@
+{
+    "filter": [
+        "series_icon_ads",
+        "series_logo_ads",
+        "live_match_logo_ads",
+        "match_scorecard_logo_ads",
+        "match_squad_ads",
+        "live_match_list_ads",
+        "player_profile_logo_ads",
+        "home_page_ads"
+    ],
+    "type": {
+        "1": "Banner",
+        "2": "Logo",
+        "3": "Native",
+        "4": "Icon",
+        "5": "Full Banner"
+    },
+    "items": [
+        {
+            "id": 17,
+            "type": "5",
+            "type_name": "App open",
+            "type_size": "1080*1620 px",
+            "client_redirect_url": "https://www.sportsdfpro.com/ipl/ambs/in/?btag=661436_CrcLineXS320x512IN&utm_source=661436&utm_medium=CrcLineX&utm_campaign=CrcLineXS320x512IN",
+            "ads_name": "full image screen",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/dafabet-new-ad.gif",
+            "credit_title": null,
+            "credit_url": null
+        },
+        {
+            "id": 13,
+            "type": "5",
+            "type_name": "App open",
+            "type_size": "1080*1620 px",
+            "client_redirect_url": "https://play.google.com/store/apps/details?id=com.cricketLineX.CricketLineX&hl=en_US",
+            "ads_name": "Full Banner Ad",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/1706770256.png",
+            "credit_title": null,
+            "credit_url": null
+        },
+        {
+            "id": 11,
+            "type": "1",
+            "type_name": "Banner",
+            "type_size": "320*50 px",
+            "client_redirect_url": "",
+            "ads_name": "Banner Ad",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/1706770153.png",
+            "credit_title": null,
+            "credit_url": null
+        },
+        {
+            "id": 10,
+            "type": "4",
+            "type_name": "Icon",
+            "type_size": "75*78 px",
+            "client_redirect_url": "",
+            "ads_name": "Icon Ad",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/1706599191.png",
+            "credit_title": null,
+            "credit_url": null
+        },
+        {
+            "id": 9,
+            "type": "2",
+            "type_name": "Logo",
+            "type_size": "75*78 px",
+            "client_redirect_url": "https://play.google.com/store/apps/details?id=com.cricketLineX.CricketLineX&hl=en_US",
+            "ads_name": "Logo Ad",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/1706599174.png",
+            "credit_title": null,
+            "credit_url": null
+        },
+        {
+            "id": 8,
+            "type": "1",
+            "type_name": "Banner",
+            "type_size": "320*50 px",
+            "client_redirect_url": "https://play.google.com/store/apps/details?id=com.cricketLineX.CricketLineX&hl=en_US",
+            "ads_name": "Banner Ad",
+            "cdnlink": "https://dioemsv3np9pr.cloudfront.net/app_ads/1706599151.jpg",
+            "credit_title": null,
+            "credit_url": null
+        }
+    ],
+    "total_items": 6,
+    "total_pages": 1
+}
