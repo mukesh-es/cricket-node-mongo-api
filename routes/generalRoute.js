@@ -14,9 +14,13 @@ router.post('/matchpicks', generalController.apiCall);
 
 
 // Logs file
-router.get('/logs/:fileName', async (req, res) => {
-  const { fileName } = req.params;
-  const filePath = path.join(__dirname, '..', 'logs', `${fileName}.log`);
+router.get(/^\/logs\/(.+)/, async (req, res) => {
+  const requestedPath = req.params[0];
+  const baseLogDir = path.join(__dirname, '..', 'logs');
+  const filePath = path.join(baseLogDir, requestedPath);
+  if (!filePath.startsWith(baseLogDir)) {
+    return res.status(400).json({ error: 'Invalid path' });
+  }
 
   let content;
   try {

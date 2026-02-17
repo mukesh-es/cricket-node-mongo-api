@@ -143,13 +143,6 @@ async function getTokenFeatures(type) {
 function getCacheKey(req, cacheKey = '') {
   const baseKey = `mongo_${cacheKey || 'api'}`;
 
-  const noParamsCacheKeys = ['seasons_ads'];
-
-  // No params used in cache key
-  if (noParamsCacheKeys.includes(cacheKey)) {
-    return baseKey;
-  }
-
   const query = req.query && Object.keys(req.query).length > 0
     ? JSON.stringify(Object.keys(req.query).sort().reduce((obj, key) => {
         obj[key] = req.query[key];

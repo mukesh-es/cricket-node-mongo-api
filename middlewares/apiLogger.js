@@ -75,10 +75,11 @@ const apiLogger = (req, res, next) => {
         requestURL, 
         queryParams, 
       }
-      const fileName = durationSec >= 10 ? 'very-slow-api' : 'slow-api';
-      const slowLogDir = path.join(__dirname, '..', 'logs');
+      const slowType = durationSec >= 10 ? 'very-slow-api' : 'slow-api';
+      const slowLogDir = path.join(__dirname, '..', 'logs', slowType);
       createFolder(slowLogDir);
-      const slowLogFile = path.join(slowLogDir, `${fileName}.log`);
+      const fileName = `${date}.log`;
+      const slowLogFile = path.join(slowLogDir, fileName);
       appendDataToFile(slowLogFile, slowLog);
     }
     // console.log(`[${currentTime}], ${requestURL}, ${responseMsg} (${responseStatus})`);
