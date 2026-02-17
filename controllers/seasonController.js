@@ -7,7 +7,7 @@ const { getApiURL } = require('../helpers/helpers');
 const callAPI = require('../helpers/apiHelper');
 
 
-const adsData = require(path.join(__dirname, '../responses/seasons_ads.json'));
+// const adsData = require(path.join(__dirname, '../responses/seasons_ads.json'));
 
 exports.fieldData = async(req, res) => {
     try{
@@ -31,7 +31,7 @@ exports.fieldData = async(req, res) => {
         }else if(apiName === 'seasons_ads'){
             // const url = getApiURL({path: req.originalUrl});
             // result = await callAPI({url});
-             result = adsData;
+            result = {};
         }else{
             const isReel = resource == 'competitions';
             const isNews = resource == 'news';
