@@ -208,13 +208,13 @@ async function getPlayersList(inputs) {
     const {search, paged, per_page} = inputs;
 
     if(search){
-        filters.title = { $regex: search, $options: "i" } 
+        // filters.title = { $regex: search, $options: "i" }
+        filters = { $text: { $search: `"${search}"` } }
     }
 
     const pagination = getPagination(paged, per_page);
 
     try{
-
         const [totalItems, result] = await Promise.all([
             PlayerModel.countDocuments(filters),
             PlayerModel.find(filters, 'players_list')

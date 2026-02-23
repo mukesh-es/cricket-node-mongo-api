@@ -1,17 +1,13 @@
-const fs = require('fs');
+// const fs = require('fs');
+const fs = require("fs").promises;
 
-function createFolder(folder){
-  if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder, { recursive: true });
-  }
+async function createFolder(folder) {
+  await fs.mkdir(folder, { recursive: true });
 }
 
-function appendDataToFile(file, data){
-  fs.appendFile(
-    file,
-    JSON.stringify(data) + '\n',
-    () => {}
-  );
+function appendDataToFile(file, data) {
+  fs.appendFile(file, JSON.stringify(data) + '\n')
+    .catch(() => {});
 }
 
 module.exports = {createFolder, appendDataToFile};

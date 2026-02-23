@@ -1,5 +1,5 @@
 const { MEDIA_TYPE_CODE, MEDIA_ENTITY_CODE } = require("../config/constants");
-const { getDateMonth } = require("../utils/dateUtils");
+const { getDateMonth, normalizeToSeconds, getTimeAgo } = require("../utils/dateUtils");
 const { getConfigSync } = require('../helpers/configHelper');
 
 function getReelCDN(){
@@ -48,6 +48,11 @@ function formatReelInfo(data){
     const reelCDN = getReelCDN();
     const cType = Number(data.ctype);
     const connectFrom = Number(data.connectfrom);
+    const timestampSeconds = normalizeToSeconds(data.timestamp);
+    const updatedSeconds = normalizeToSeconds(data.updated);
+    const scheduledSeconds = normalizeToSeconds(data.scheduled);
+    const orderbyTimeSeconds = normalizeToSeconds(data.orderby_time);
+
     return {
         id: data.reel_id,
         ctype: cType,
@@ -57,10 +62,10 @@ function formatReelInfo(data){
         title: data.title,
         subtitle: data.subtitle,
         logo_url: data.logo_url,
-        timestamp: String(data.timestamp),
-        updated: String(data.updated),
-        scheduled: String(data.scheduled),
-        orderby_time: String(data.orderby_time),
+        timestamp: String(timestampSeconds),
+        updated: String(updatedSeconds),
+        scheduled: String(scheduledSeconds),
+        orderby_time: String(orderbyTimeSeconds),
         credit_title: data.credit_title,
         credit_url: data.credit_url,
         thumbnail: `${data.thumbnail ? `${reelCDN}thumbnail/${data.thumbnail}` : ''}`,
@@ -71,6 +76,7 @@ function formatReelInfo(data){
         ctype_str: MEDIA_TYPE_CODE[cType]??'',
         connectfrom_str: MEDIA_ENTITY_CODE[connectFrom]??'',
         cdnlink: `${reelCDN}${data.clink}`,
+        published: getTimeAgo(orderbyTimeSeconds),
     }
 }
 
@@ -87,6 +93,8 @@ function formatNewsInfo(data){
             }
         }
     }
+    const createdSeconds = normalizeToSeconds(data.created);
+    
     return {
         news_id: String(data.news_id),
         title: data.title,
@@ -99,7 +107,8 @@ function formatNewsInfo(data){
         news_url: data.news_url,
         tags: tags,
         credit: String(data.credit),
-        created: String(data.created),
+        created: String(createdSeconds),
+        published: getTimeAgo(createdSeconds),
     }
 }
 
