@@ -54,7 +54,8 @@ function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
 
   const baseObjEnv = {
     rest: process.env.REST_BASE,
-    appapi: process.env.APPAPI_BASE
+    appapi: process.env.APPAPI_BASE,
+    admanager: process.env.AD_MANAGER
   };
 
   const apiConfig = getConfigSync();
