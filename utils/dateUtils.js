@@ -55,11 +55,63 @@ function toIST(timestamp, op=1){
   }
 }
 
+function normalizeToSeconds(created) {
+    let timestamp = Number(created);
+
+    if (!timestamp) return 0;
+
+    // If milliseconds (13 digits) → convert to seconds
+    if (timestamp.toString().length === 13) {
+        timestamp = Math.floor(timestamp / 1000);
+    }
+
+    return timestamp;
+}
+
+function getTimeAgo(created) {
+    if (!created) return '';
+
+    let timestamp = Number(created);
+
+    // Detect seconds vs milliseconds
+    if (timestamp.toString().length === 10) {
+        timestamp = timestamp * 1000; // convert seconds to ms
+    }
+
+    const now = Date.now();
+    const diff = now - timestamp;
+
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) return `${seconds}s ago`;
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    if (weeks < 4) return `${weeks}wk ago`;
+    if (months < 12) return `${months}month ago`;
+
+    // If 1 year or more → show date
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
 module.exports = { 
   formatDate, 
   getUnixTimestamp,
   getTimestampRange,
   getDateMonth,
   formatDateTime,
-  toIST
+  toIST,
+  getTimeAgo,
+  normalizeToSeconds
 };
