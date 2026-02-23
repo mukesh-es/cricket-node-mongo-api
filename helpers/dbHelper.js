@@ -423,8 +423,8 @@ async function getReelsList(inputs) {
 
 async function getNewsList(inputs) {
     try{
+        const currentTime = Math.floor(Date.now() / 1000);
         let filters = {};
-
         let {
             id,
             country, 
@@ -460,6 +460,8 @@ async function getNewsList(inputs) {
             filters.category = category;
         }
         filters.country = { $in: countries};
+
+        filters.created = { $lte: currentTime };
 
         if (filter_type && filter_type > 0 && filter_value) {
             if(filter_type === 1){

@@ -94,7 +94,6 @@ function formatNewsInfo(data){
         }
     }
     const createdSeconds = normalizeToSeconds(data.created);
-    
     return {
         news_id: String(data.news_id),
         title: data.title,
