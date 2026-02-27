@@ -51,38 +51,71 @@ const apiLogger = (req, res, next) => {
 
   // Override res.json to print response
   const originalJson = res.json.bind(res);
+  
   res.json = (body) => {
-    const durationMs = Date.now() - startTime;
-    const durationSec = durationMs / 1000;
 
-    let responseMsg = body.message??'unknown';
-    let responseStatus = body.status??'unknown';
-    if (typeof body === 'string') {
-      try {
-        const parsedBody = JSON.parse(body);
-        responseMsg = parsedBody.message ?? 'unknown';
-        responseStatus = parsedBody.status ?? 'unknown';
-      } catch {
-        responseMsg = body.slice(0, 50);
-      }
-    }
-    
     // Slow Log
-    if (durationSec >= 2) {
+    const totalMs = Date.now() - startTime;
+    const totalSec = totalMs / 1000;
+
+    const externalMs = req._externalApiTime || 0;
+    const externalSec = externalMs / 1000;
+
+    const nodeMs = totalMs - externalMs;
+    const nodeSec = nodeMs / 1000;
+
+    const externalCalls = req._externalApiCalls || 0;
+
+    const isNodeSlow = nodeSec >= 1; 
+    const isExternalSlow = externalSec >= 2;
+    const isTotalSlow = totalSec >= 2;
+
+    if (isTotalSlow) {
       const slowLog = {
         currentTime, 
-        durationSec, 
         requestURL, 
         queryParams, 
+        timing: {
+          totalSec: +totalSec.toFixed(3),
+          externalApiSec: +externalSec.toFixed(3),
+          nodeProcessingSec: +nodeSec.toFixed(3),
+          externalApiCalls: externalCalls,
+        },
+        flags: {
+          isNodeSlow,
+          isExternalSlow,
+        }
+      };
+
+      let slowType;
+      if (totalSec >= 10) {
+        slowType = 'very-slow-api';
+      } else if (isExternalSlow && !isNodeSlow) {
+        slowType = 'slow-external-api';
+      } else {
+        slowType = 'slow-api';
       }
-      const slowType = durationSec >= 10 ? 'very-slow-api' : 'slow-api';
+
       const slowLogDir = path.join(__dirname, '..', 'logs', slowType);
       createFolder(slowLogDir);
       const fileName = `${date}.log`;
       const slowLogFile = path.join(slowLogDir, fileName);
       appendDataToFile(slowLogFile, slowLog);
     }
+
+    // let responseMsg = body.message??'unknown';
+    // let responseStatus = body.status??'unknown';
+    // if (typeof body === 'string') {
+    //   try {
+    //     const parsedBody = JSON.parse(body);
+    //     responseMsg = parsedBody.message ?? 'unknown';
+    //     responseStatus = parsedBody.status ?? 'unknown';
+    //   } catch {
+    //     responseMsg = body.slice(0, 50);
+    //   }
+    // }
     // console.log(`[${currentTime}], ${requestURL}, ${responseMsg} (${responseStatus})`);
+    
     originalJson(body);
   };
 

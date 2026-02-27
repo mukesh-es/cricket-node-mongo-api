@@ -50,7 +50,8 @@ function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
     throw new Error('path is required');
   }
 
-  path = path.replace(/^\/+/, '');
+  // path = path.replace(/^\/+/, '');
+  path = path.replace(/^\/+/, '').replace(/\/+$/, '');
 
   const baseObjEnv = {
     rest: process.env.REST_BASE,
