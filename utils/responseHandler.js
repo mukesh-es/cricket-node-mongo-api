@@ -1,6 +1,6 @@
 const { HTTP_CODE } = require("../config/constants");
 const { getConfigSync } = require("../helpers/configHelper");
-const { getContextValue } = require('../middlewares/requestContext');
+const { isEmpty } = require("../helpers/helpers");
 
 const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CODE.SUCCESS}) => {
   if (typeof result === 'string') {
@@ -62,11 +62,5 @@ const generateMetadata = (content = {}) => {
 
   return metaData;
 };
-
-const isEmpty = (v) =>
-    v == null || v === '' || 
-    (Array.isArray(v) && !v.length) || 
-    (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
-
 
 module.exports = { requestSuccess, requestFailed, sendResponse };

@@ -37,16 +37,16 @@ const COMPETITION_STATUS = {
   completed: 2,
 };
 
-const DEFAULT_PERPAGE_LIMITS = {
-  default: 10,
-  matches: 10,
-  competitions: 10,
-  teams: 10,
-  players: 10,
-  season_competitionlist: 1000, // Competitions
-  seasons_competitions: 10, // Reels
-  seasons_news: 10,
-  changelogs: 20
+const PERPAGE_LIMITS = {
+  default:               { default: 10, max: 50 },
+  matches:               { default: 10, max: 50 },
+  competitions:          { default: 10, max: 50 },
+  teams:                 { default: 10, max: 50  },
+  players:               { default: 10, max: 50 },
+  season_competitionlist:{ default: 100, max: 100 },
+  seasons_competitions:  { default: 10, max: 50 },
+  seasons_news:          { default: 10, max: 50 },
+  changelogs:            { default: 10, max: 50 },
 };
 
 const CRICKET_FORMATS = {
@@ -72,7 +72,7 @@ module.exports = {
   MEDIA_ENTITY_CODE,
   NEWS_CATEGORIES,
   NEWS_APP_CATEGORIES,
-  DEFAULT_PERPAGE_LIMITS,
   COMPETITION_STATUS,
-  CRICKET_FORMATS
+  CRICKET_FORMATS,
+  PERPAGE_LIMITS
 };
