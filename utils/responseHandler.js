@@ -1,7 +1,6 @@
 const { HTTP_CODE } = require("../config/constants");
 const { getConfigSync } = require("../helpers/configHelper");
 const { isEmpty } = require("../helpers/helpers");
-const { getContextValue } = require('../middlewares/requestContext');
 
 const requestSuccess = ({res, message = "success", result = {}, status = HTTP_CODE.SUCCESS}) => {
   if (typeof result === 'string') {
