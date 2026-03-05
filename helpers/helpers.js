@@ -1,5 +1,5 @@
 const { apiFieldsKeys } = require("../config/apiFieldKeys");
-const { DEFAULT_PERPAGE_LIMITS, CRICKET_FORMATS } = require("../config/constants");
+const { CRICKET_FORMATS, PERPAGE_LIMITS } = require("../config/constants");
 const { getContextValue } = require("../middlewares/requestContext");
 const { getConfigSync } = require("./configHelper");
 
@@ -25,19 +25,31 @@ function getFieldName(apiName){
     return apiFieldsKeys?.[apiName] || null;
 }
 
+function getMin(v1, v2) {
+    return Math.min(Number(v1), Number(v2));
+}
+
 function getOffset(pageNumber, perPage){
   return (pageNumber - 1) * perPage;
 }
 
-function getPagination(pageNumber = 1, perPage = 20) {
-    const apiName = getContextValue('api_name');
+function getLimit(perPage = null) {
+  const apiName = getContextValue('api_name');
+  const limits = PERPAGE_LIMITS[apiName] ?? PERPAGE_LIMITS.default;
+
+  return isEmpty(perPage)
+      ? limits.default
+      : getMin(perPage, limits.max);
+}
+
+function getPagination(pageNumber = 1, perPage = null) {
     pageNumber = Number(pageNumber) || 1;
-    const defaultLimit = DEFAULT_PERPAGE_LIMITS[apiName] || DEFAULT_PERPAGE_LIMITS.default;
-    perPage = Math.min(perPage, defaultLimit);
+
+    const limit = getLimit(perPage);
     
     return {
-        offset: getOffset(pageNumber, perPage),
-        limit: perPage
+        offset: getOffset(pageNumber, limit),
+        limit: limit
     };
 }
 
@@ -50,7 +62,8 @@ function getApiURL({ path, base = 'appapi', routePrefix = '' }) {
     throw new Error('path is required');
   }
 
-  path = path.replace(/^\/+/, '');
+  // path = path.replace(/^\/+/, '');
+  path = path.replace(/^\/+/, '').replace(/\/+$/, '');
 
   const baseObjEnv = {
     rest: process.env.REST_BASE,
@@ -187,6 +200,12 @@ function getPagesCount(total, perPage){
   return Math.ceil(total / perPage);
 }
 
+
+const isEmpty = (v) =>
+    v == null || v === '' || 
+    (Array.isArray(v) && !v.length) || 
+    (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
+
 module.exports = { 
     getApiName, 
     getFieldName, 
@@ -204,5 +223,6 @@ module.exports = {
     normalizeURL,
     normalizeStr,
     normalizeSpaces,
-    getPagesCount
+    getPagesCount,
+    isEmpty
 };

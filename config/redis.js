@@ -29,7 +29,10 @@ async function connectRedis() {
 }
 
 function getRedisClient() {
-  return redisClient;
+  if (redisClient && redisClient.isReady) {
+    return redisClient;
+  }
+  return null;
 }
 
 module.exports = { connectRedis, getRedisClient, redisEnabled };

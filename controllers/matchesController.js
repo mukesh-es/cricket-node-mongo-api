@@ -23,7 +23,7 @@ exports.fieldData = async(req, res) => {
                 resourceModel = InningModel;
             }else{
                 const url = getApiURL({path: req.originalUrl});
-                result = await callAPI({url});
+                result = await callAPI({req, url});
             }
         }else if(resource === 'newpoint2'){
             let url='';
@@ -34,7 +34,7 @@ exports.fieldData = async(req, res) => {
             }else{
                 url = getApiURL({path: req.originalUrl, base: 'rest', routePrefix: 'appapi'});
             }
-            result = await callAPI({url});
+            result = await callAPI({req, url});
         } else{
             resourceModel = MatchModel;
         }
