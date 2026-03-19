@@ -88,11 +88,35 @@ exports.stats = async(req, res) => {
             result = await getFieldByAPI(CompStatModel, 'default', filters);
         }
 
+        // Handle case where both API calls returned null/empty
+        if(!result){
+            return requestSuccess({
+                res,
+                result: {
+                    stats: [],
+                    total_pages: 0,
+                    total_records: 0
+                }
+            });
+        }
+
         paged = Number(paged) || 1;
         per_page = Number(per_page) || 30;
         const offset = getOffset(paged, per_page);
         const parsedResult =
                 typeof result === 'string' ? JSON.parse(result) : result;
+
+        // Guard if parsedResult is still null after parsing
+        if(!parsedResult){
+            return requestSuccess({
+                res,
+                result: {
+                    stats: [],
+                    total_pages: 0,
+                    total_records: 0
+                }
+            });
+        }
 
         let statsArray = Array.isArray(parsedResult?.stats)
                 ? [...parsedResult.stats]
@@ -108,7 +132,6 @@ exports.stats = async(req, res) => {
         }
 
         parsedResult.total_pages = getPagesCount(statsCount, per_page);
-            
 
         requestSuccess({res, result: parsedResult});
     } catch(err){
