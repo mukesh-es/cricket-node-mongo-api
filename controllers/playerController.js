@@ -18,26 +18,55 @@ exports.fieldData = async(req, res) => {
         const fieldName = getFieldName(apiName);
         const filters = {pid: Number(playerId)};
         let result = await getFieldByAPI(PlayerModel, fieldName, filters);
+
         if(resource === 'playermatches'){
+
+            // Guard: no data found
+            if(!result){
+                return requestSuccess({
+                    res,
+                    result: { items: [], total_pages: 0, total_records: 0 }
+                });
+            }
+
             const offset = getOffset(paged, per_page);
-            const parsedResult =
-                    typeof result === 'string' ? JSON.parse(result) : result;
+
+            // JSON parse with timing
+            const parsedResult = (() => {
+                if (typeof result !== 'string') return result;
+                const start = performance.now();
+                const parsed = JSON.parse(result);
+                req._jsonParseTime = (req._jsonParseTime || 0) + (performance.now() - start);
+                return parsed;
+            })();
+
+            // Guard: parse returned null
+            if(!parsedResult){
+                return requestSuccess({
+                    res,
+                    result: { items: [], total_pages: 0, total_records: 0 }
+                });
+            }
 
             let itemsArray = Array.isArray(parsedResult?.items)
                     ? [...parsedResult.items]
                     : [];
             const itemsCount = itemsArray.length;
+
+            const response = { ...parsedResult }; // ✅ avoid mutating cached object
+
             if(itemsCount < per_page && paged > Number(parsedResult.total_pages)){
-                parsedResult.items = [];
+                response.items = [];
             }else{
-                parsedResult.items =
+                response.items =
                         per_page > 0
                             ? itemsArray.slice(offset, offset + per_page)
                             : itemsArray;
             }
-            parsedResult.total_pages = getPagesCount(itemsCount, per_page);
-            result = parsedResult;
+            response.total_pages = getPagesCount(itemsCount, per_page);
+            result = response;
         }
+
         requestSuccess({res, result});
     } catch(err){
         requestFailed({res, err});
