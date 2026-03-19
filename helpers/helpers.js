@@ -37,7 +37,7 @@ function getLimit(perPage = null) {
   const apiName = getContextValue('api_name');
   const limits = PERPAGE_LIMITS[apiName] ?? PERPAGE_LIMITS.default;
 
-  return isEmpty(perPage)
+  return !isValidNumber(perPage)
       ? limits.default
       : getMin(perPage, limits.max);
 }
@@ -201,10 +201,16 @@ function getPagesCount(total, perPage){
 }
 
 
+const isValidNumber = (v) => !isEmpty(v) && !isNaN(Number(v));
+
 const isEmpty = (v) =>
-    v == null || v === '' || 
-    (Array.isArray(v) && !v.length) || 
-    (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
+    v == null  // null, undefined
+    || v === false 
+    || Number(v) === 0 
+    || (typeof v === 'string' && !v.trim()) // empty string
+    || (Array.isArray(v) && !v.length) // []
+    || (typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length) // {}
+    || (typeof v === 'number' && isNaN(v)); // NaN
 
 module.exports = { 
     getApiName, 
@@ -224,5 +230,6 @@ module.exports = {
     normalizeStr,
     normalizeSpaces,
     getPagesCount,
-    isEmpty
+    isEmpty,
+    isValidNumber
 };
