@@ -16,9 +16,19 @@ const { getContextValue } = require('../middlewares/requestContext');
 
 async function getFieldByAPI(Model, apiName, filters={}) {
     try{
-        const doc = await Model.findOne(filters).lean();
-        if(!doc) return null;
-        return doc[apiName] || null;
+        const projection = { _id: 0, [apiName]: 1 };
+        if (apiName !== 'default') {
+            projection['default'] = 1; // Fetch fallback in same query
+        }
+
+        const doc = await Model.findOne(filters, projection).lean();
+        if (!doc) return null;
+
+        // Resolve primary field, fall back to 'default' in one shot
+        const raw = doc[apiName] ?? doc['default'] ?? null;
+        if (!raw) return null;
+
+        return raw;
     }catch(err){
         errorWithTime('Error: ', err.message);
         return null;
