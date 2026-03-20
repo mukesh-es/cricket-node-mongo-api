@@ -7,8 +7,12 @@ const apiCache = require('./middlewares/apiCache');
 const { errorWithTime } = require('./helpers/loggerHelper');
 const { normalizeURL } = require('./helpers/helpers');
 
+const compression = require('compression');
+
 const app = express();
 app.use(express.json());
+
+app.use(compression());
 
 // Normalize URL
 app.use((req, res, next) => {
