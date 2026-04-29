@@ -68,7 +68,7 @@ exports.fieldData = async(req, res) => {
                         : [];
 
                     const filtered = commentariesArray
-                                .filter(item => item?.event !== "overend") // 👈 skip
+                                .filter(item => item?.event !== "overend")
                                 .map(item => ({
                                     over: item.over,
                                     ball: item.ball,
