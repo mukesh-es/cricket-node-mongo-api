@@ -17,6 +17,8 @@ exports.fieldData = async(req, res) => {
         let result;
         let resourceModel;
         let filters = {match_id: Number(matchId)};
+
+        // Player Wagon
         if(iid && resource === 'playerwagon'){
             if(pid == 'all'){
                 filters.iid = Number(iid);
@@ -25,7 +27,9 @@ exports.fieldData = async(req, res) => {
                 const url = getApiURL({path: req.originalUrl});
                 result = await callAPI({req, url});
             }
-        }else if(resource === 'newpoint2'){
+        }
+        // NewPoint2
+        else if(resource === 'newpoint2'){
             let url='';
             if(pointapi && pointapi == 1){
                 let rewrittenPath = replacePathSegment(req.originalUrl, 'newpoint2', 'point');
@@ -35,15 +39,60 @@ exports.fieldData = async(req, res) => {
                 url = getApiURL({path: req.originalUrl, base: 'rest', routePrefix: 'appapi'});
             }
             result = await callAPI({req, url});
+        }
+        // Odds History (Chart)
+        else if(resource === 'oddshistory'){
+            const commentaryField = 'innings_commentary';
+            let allInnings = await InningModel.find(
+                    { match_id: Number(matchId) },
+                    { inning_id: 1, [commentaryField]: 1, iid: 1 }
+                );
+            
+            let oddsHistoryResult = {
+                teams: {},
+                history: {}
+            };
+            if (allInnings && allInnings.length > 0) {
+                allInnings.forEach(inning => {
+                    const parsed =
+                        typeof inning[commentaryField] === 'string'
+                            ? JSON.parse(inning[commentaryField])
+                            : inning[commentaryField];
+
+                    if (Object.keys(oddsHistoryResult.teams).length === 0 && parsed?.teams) {
+                        oddsHistoryResult.teams = parsed.teams;
+                    }
+
+                    let commentariesArray = Array.isArray(parsed?.commentaries)
+                        ? [...parsed.commentaries]
+                        : [];
+
+                    const filtered = commentariesArray
+                                .filter(item => item?.event !== "overend") // 👈 skip
+                                .map(item => ({
+                                    over: item.over,
+                                    ball: item.ball,
+                                    inning_score: item.inning_score,
+                                    team_win_percentage: item.team_win_percentage,
+                                    teamback: item.teamback,
+                                    teamlay: item.teamlay,
+                                    teamoddstype: item.teamoddstype,
+                                    is_wicket: item?.event === 'wicket'
+                                }));
+
+                    oddsHistoryResult.history[inning.iid] = filtered;
+                })
+            }
+            return requestSuccess({res, result:oddsHistoryResult});
         } else{
             resourceModel = MatchModel;
         }
         if(resourceModel && fieldName){
             result = await getFieldByAPI(resourceModel, fieldName, filters);
         }
-        requestSuccess({res, result});
+        return requestSuccess({res, result});
     } catch(err){
-        requestFailed({res, err});
+        return requestFailed({res, err});
     }
 }
 
