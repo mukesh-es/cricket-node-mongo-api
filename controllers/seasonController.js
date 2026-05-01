@@ -28,7 +28,6 @@ exports.fieldData = async(req, res) => {
                 queryParams.total_items_type = 'num';
             }
             result = await getCompetitionsList(queryParams);
-            console.log(result);
         }else if(apiName === 'seasons_ads'){
             const url = getApiURL({path: req.originalUrl, base: 'admanager', routePrefix: 'adsapi'});
             result = await callAPI({req, url});
