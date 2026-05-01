@@ -68,17 +68,17 @@ exports.fieldData = async(req, res) => {
                         : [];
 
                     const filtered = commentariesArray
-                                .filter(item => item?.event !== "overend")
-                                .map(item => ({
-                                    over: item.over,
-                                    ball: item.ball,
-                                    inning_score: item.inning_score,
-                                    team_win_percentage: item.team_win_percentage,
-                                    teamback: item.teamback,
-                                    teamlay: item.teamlay,
-                                    teamoddstype: item.teamoddstype,
-                                    is_wicket: item?.event === 'wicket'
-                                }));
+                            .filter(item => item?.event !== "overend")
+                            .map(item => ({
+                                over: item.over,
+                                ball: item.ball,
+                                inning_score: item.inning_score,
+                                team_win_percentage: item.team_win_percentage,
+                                teamback: item.teamback,
+                                teamlay: item.teamlay,
+                                teamoddstype: item.teamoddstype,
+                                is_wicket: item?.event === 'wicket'
+                            }));
 
                     oddsHistoryResult.history[inning.iid] = filtered;
                 })
