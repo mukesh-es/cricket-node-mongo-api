@@ -10,6 +10,7 @@ exports.fieldData = async(req, res) => {
         let {order, paged, per_page} = req.query;
         const apiName = getContextValue('api_name');
         const fieldName = getFieldName(apiName);
+        const isCommentary = resource === 'commentary';
         if(!inningNumber || inningNumber <= 0){
             inningNumber = 1;
         }
